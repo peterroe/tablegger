@@ -1,5 +1,5 @@
 {
-  "name": "node-table-log",
+  "name": "tablegger",
   "version": "1.0.0",
   "packageManager": "pnpm@7.31.0",
   "description": "typescript-template",

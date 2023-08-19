@@ -10,6 +10,7 @@ describe('test', () => {
       cell: {
         gapX: 4,
         align: 'right',
+        paddingX: 2,
       },
     })
     ntLog.push(p.bgYellow('nam2sdfsdfs34e'))
@@ -20,10 +21,9 @@ describe('test', () => {
     ntLog.push('wh23y')
     ntLog.push('why')
     expect(ntLog.toString()).toMatchInlineSnapshot(`
-      "[43mnam2sdfsdfs34e[49m||||ag234e||||[31mhobby[39m||||
-                take||||   why||||wh23y||||
-                 why||||      ||||     ||||
-      "
+      "  [43mnam2sdfsdfs34e[49m  ││││  ag234e  ││││  [31mhobby[39m  
+                  take  ││││     why  ││││  wh23y  
+                   why  ││││          ││││         "
     `)
   })
 
@@ -48,13 +48,12 @@ describe('test', () => {
     ntLog.push('why')
     ntLog.push('why')
     expect(ntLog.toString()).toMatchInlineSnapshot(`
-      "name     ||||age     ||||
-      [34mhobby[39m    ||||take    ||||
-      why      ||||[4m234300h4[24m||||
-      [1mgf238884d[22m||||why     ||||
-      why      ||||why     ||||
-      why      ||||        ||||
-      "
+      "name     ││││age     
+      [34mhobby[39m    ││││take    
+      why      ││││[4m234300h4[24m
+      [1mgf238884d[22m││││why     
+      why      ││││why     
+      why      ││││        "
     `)
   })
 
@@ -62,9 +61,11 @@ describe('test', () => {
     const ntLog = new NTLog({
       table: {
         column: 2,
+        border: true,
       },
       cell: {
-        gapX: 4,
+        gapX: 0,
+        paddingX: 2,
         align: 'center',
       },
     })
@@ -75,9 +76,13 @@ describe('test', () => {
     ntLog.push('why')
     ntLog.push(p.red('jjhh'))
     expect(ntLog.toString()).toMatchInlineSnapshot(`
-      "  name  ||||agssss3sse||||
-      [34mhohhhbby[39m||||   [1mtake[22m   ||||
-        why   ||||   [31mjjhh[39m   ||||
+      "┌────────────┬──────────────┐
+      │    name    │  agssss3sse  │
+      ├────────────┼──────────────┤
+      │  [34mhohhhbby[39m  │     [1mtake[22m     │
+      ├────────────┼──────────────┤
+      │    why     │     [31mjjhh[39m     │
+      └────────────┴──────────────┘
       "
     `)
   })

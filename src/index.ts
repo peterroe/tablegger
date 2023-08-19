@@ -8,6 +8,7 @@ const defaultOption: OptionType = {
   },
   cell: {
     paddingX: 0,
+    paddingY: 0,
     align: 'left',
     width: 20,
     gapX: 4,
@@ -28,12 +29,14 @@ export class NTLog {
    * Current column index
    */
   j = 0
+  columnsWidth: number[]
   constructor(option?: Partial<UserOptionType>) {
     this.option = defu(option, defaultOption)
     const { table: { column } } = this.option
     this.data = new Array(
       new Array(column).fill(''),
     )
+    this.columnsWidth = new Array(column)
   }
 
   push(word: string) {
@@ -49,27 +52,53 @@ export class NTLog {
     this.j++
   }
 
-  toString() {
+  replace(i: number, j: number, word: string) {
+    this.data[i][j] = word
+  }
+
+  get maxRowLength() {
     const { table: { column } } = this.option
+    const maxRowWordsLength = this.columnsWidth.reduce((pre, cur) => {
+      return pre + cur
+    }, 0)
+    const gapAndPaddingLength
+      = (column - 1) * this.option.cell.gapX
+      + column * this.option.cell.paddingX * 2
+    return maxRowWordsLength + gapAndPaddingLength
+  }
+
+  toString() {
+    const { table: { column, border }, cell: { paddingX } } = this.option
     // Acturl width of each column (No conrol characters)
-    const columnsWidth = new Array(column)
     for (let j = 0; j < column; j++) {
       // Collect each column word
       const columWords: string[] = []
       for (let i = 0; i < this.data.length; i++)
         columWords.push(this.data[i][j])
       // Calculate max word length from each column
-      columnsWidth[j] = calcMaxEffectWordLength(columWords)
+      this.columnsWidth[j] = calcMaxEffectWordLength(columWords)
     }
     let result = ''
+    if (border) {
+      result += '┌'
+      this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+        result += '─'.repeat(column)
+        if (index < this.columnsWidth.length - 1)
+          result += '┬'
+      })
+      result += '┐\n'
+    }
     for (let i = 0; i < this.data.length; i++) {
+      if (border)
+        result += '│'
+
       for (let j = 0; j < this.data[i].length; j++) {
         // insert padding gap before each word
         result += ' '.repeat(this.option.cell.paddingX)
 
         const rawWord = this.data[i][j]
         const pureWord = cleanColor(rawWord)
-        const gapLen = columnsWidth[j] - pureWord.length
+        const gapLen = this.columnsWidth[j] - pureWord.length
 
         if (this.option.cell.align === 'right') {
           result = result + ' '.repeat(gapLen) + rawWord
@@ -84,9 +113,34 @@ export class NTLog {
         }
 
         result += ' '.repeat(this.option.cell.paddingX)
-        result += '|'.repeat(this.option.cell.gapX)
+        if (border)
+          result += '│'
+        if (j < this.data[j].length - 1)
+
+          result += '│'.repeat(this.option.cell.gapX)
       }
-      result += '\n'
+
+      if (border && i < this.data.length - 1) {
+        result += '\n├'
+        this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+          result += '─'.repeat(column)
+          if (index < this.columnsWidth.length - 1)
+            result += '┼'
+        })
+        result += '┤'
+      }
+
+      if (i < this.data.length - 1)
+        result += '\n'.repeat(this.option.cell.paddingY + 1)
+    }
+    if (border) {
+      result += '\n└'
+      this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+        result += '─'.repeat(column)
+        if (index < this.columnsWidth.length - 1)
+          result += '┴'
+      })
+      result += '┘\n'
     }
     console.log(result)
     return result
