@@ -21,9 +21,10 @@ describe('test', () => {
     ntLog.push('wh23y')
     ntLog.push('why')
     expect(ntLog.toString()).toMatchInlineSnapshot(`
-      "  [43mnam2sdfsdfs34e[49m  ││││  ag234e  ││││  [31mhobby[39m  
-                  take  ││││     why  ││││  wh23y  
-                   why  ││││          ││││         "
+      "  [43mnam2sdfsdfs34e[49m  @@@@  ag234e  @@@@  [31mhobby[39m  
+                  take  @@@@     why  @@@@  wh23y  
+                   why  @@@@          @@@@         
+      "
     `)
   })
 
@@ -48,12 +49,13 @@ describe('test', () => {
     ntLog.push('why')
     ntLog.push('why')
     expect(ntLog.toString()).toMatchInlineSnapshot(`
-      "name     ││││age     
-      [34mhobby[39m    ││││take    
-      why      ││││[4m234300h4[24m
-      [1mgf238884d[22m││││why     
-      why      ││││why     
-      why      ││││        "
+      "name     @@@@age     
+      [34mhobby[39m    @@@@take    
+      why      @@@@[4m234300h4[24m
+      [1mgf238884d[22m@@@@why     
+      why      @@@@why     
+      why      @@@@        
+      "
     `)
   })
 
@@ -66,6 +68,7 @@ describe('test', () => {
       cell: {
         gapX: 0,
         paddingX: 2,
+        paddingY: 2,
         align: 'center',
       },
     })
@@ -77,11 +80,17 @@ describe('test', () => {
     ntLog.push(p.red('jjhh'))
     expect(ntLog.toString()).toMatchInlineSnapshot(`
       "┌────────────┬──────────────┐
+      │            │              │
       │    name    │  agssss3sse  │
+      │            │              │
       ├────────────┼──────────────┤
+      │            │              │
       │  [34mhohhhbby[39m  │     [1mtake[22m     │
+      │            │              │
       ├────────────┼──────────────┤
+      │            │              │
       │    why     │     [31mjjhh[39m     │
+      │            │              │
       └────────────┴──────────────┘
       "
     `)

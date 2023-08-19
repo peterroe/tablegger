@@ -30,6 +30,10 @@ export class NTLog {
    */
   j = 0
   columnsWidth: number[]
+  /**
+   * Output result
+   */
+  result = ''
   constructor(option?: Partial<UserOptionType>) {
     this.option = defu(option, defaultOption)
     const { table: { column } } = this.option
@@ -67,9 +71,8 @@ export class NTLog {
     return maxRowWordsLength + gapAndPaddingLength
   }
 
-  toString() {
-    const { table: { column, border }, cell: { paddingX } } = this.option
-    // Acturl width of each column (No conrol characters)
+  calcColumnsWidth() {
+    const { table: { column } } = this.option
     for (let j = 0; j < column; j++) {
       // Collect each column word
       const columWords: string[] = []
@@ -78,72 +81,116 @@ export class NTLog {
       // Calculate max word length from each column
       this.columnsWidth[j] = calcMaxEffectWordLength(columWords)
     }
-    let result = ''
+  }
+
+  addPaddingY() {
+
+  }
+
+  addBorderHeader() {
+    const { cell: { paddingX } } = this.option
+    this.result += '┌'
+    this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+      this.result += '─'.repeat(column)
+      if (index < this.columnsWidth.length - 1)
+        this.result += '┬'
+    })
+    this.result += '┐\n'
+  }
+
+  addBorderRow() {
+    const { cell: { paddingX } } = this.option
+    this.result += '├'
+    this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+      this.result += '─'.repeat(column)
+      if (index < this.columnsWidth.length - 1)
+        this.result += '┼'
+    })
+    this.result += '┤\n'
+  }
+
+  addPaddingYRow() {
+    const { table: { border }, cell: { paddingY, paddingX } } = this.option
     if (border) {
-      result += '┌'
+      this.result += '│'
       this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
-        result += '─'.repeat(column)
+        this.result += ' '.repeat(column)
         if (index < this.columnsWidth.length - 1)
-          result += '┬'
+          this.result += '│'
       })
-      result += '┐\n'
+      this.result += '│\n'
     }
+    else {
+      this.result += '\n'.repeat(this.option.cell.paddingY)
+    }
+  }
+
+  addBorderFooter() {
+    const { cell: { paddingX } } = this.option
+    this.result += '└'
+    this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+      this.result += '─'.repeat(column)
+      if (index < this.columnsWidth.length - 1)
+        this.result += '┴'
+    })
+    this.result += '┘\n'
+  }
+
+  toString() {
+    const { table: { column, border }, cell: { paddingX } } = this.option
+    // Reset result
+    this.result = ''
+    // Get columnsWidth
+    this.calcColumnsWidth()
+    if (border)
+      this.addBorderHeader()
+
     for (let i = 0; i < this.data.length; i++) {
+      this.addPaddingYRow()
       if (border)
-        result += '│'
+        this.result += '│'
 
       for (let j = 0; j < this.data[i].length; j++) {
         // insert padding gap before each word
-        result += ' '.repeat(this.option.cell.paddingX)
+        this.result += ' '.repeat(this.option.cell.paddingX)
 
         const rawWord = this.data[i][j]
         const pureWord = cleanColor(rawWord)
         const gapLen = this.columnsWidth[j] - pureWord.length
 
         if (this.option.cell.align === 'right') {
-          result = result + ' '.repeat(gapLen) + rawWord
+          this.result = this.result + ' '.repeat(gapLen) + rawWord
         }
         else if (this.option.cell.align === 'left') {
-          result = result + rawWord + ' '.repeat(gapLen)
+          this.result = this.result + rawWord + ' '.repeat(gapLen)
         }
         else {
           const startLen = Math.floor(gapLen / 2)
           const endLen = gapLen - startLen
-          result = result + ' '.repeat(startLen) + rawWord + ' '.repeat(endLen)
+          this.result = this.result + ' '.repeat(startLen) + rawWord + ' '.repeat(endLen)
         }
 
-        result += ' '.repeat(this.option.cell.paddingX)
+        this.result += ' '.repeat(this.option.cell.paddingX)
         if (border)
-          result += '│'
+          this.result += '│'
+
         if (j < this.data[j].length - 1)
-
-          result += '│'.repeat(this.option.cell.gapX)
+          this.result += '@'.repeat(this.option.cell.gapX)
       }
+      if (border)
+        this.result += '\n'
 
-      if (border && i < this.data.length - 1) {
-        result += '\n├'
-        this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
-          result += '─'.repeat(column)
-          if (index < this.columnsWidth.length - 1)
-            result += '┼'
-        })
-        result += '┤'
-      }
+      this.addPaddingYRow()
+      if (border && i < this.data.length - 1)
+        this.addBorderRow()
+      else if (!border)
+        this.result += '\n'
+    }
+    if (border)
+      this.addBorderFooter()
 
-      if (i < this.data.length - 1)
-        result += '\n'.repeat(this.option.cell.paddingY + 1)
-    }
-    if (border) {
-      result += '\n└'
-      this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
-        result += '─'.repeat(column)
-        if (index < this.columnsWidth.length - 1)
-          result += '┴'
-      })
-      result += '┘\n'
-    }
-    console.log(result)
-    return result
+    console.log(this.result)
+    return this.result
   }
 }
 
