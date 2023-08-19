@@ -1,6 +1,6 @@
 {
   "name": "node-table-log",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "packageManager": "pnpm@7.31.0",
   "description": "typescript-template",
   "author": "peterroe",
