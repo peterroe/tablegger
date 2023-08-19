@@ -5,9 +5,13 @@ export interface UserOptionType {
 
 export interface TableType {
   /**
+   * Is need a border
    * @default true
    */
   border?: boolean
+  /**
+   * The number of columns in the table
+   */
   column?: number
 }
 
@@ -17,21 +21,17 @@ export interface CellType {
    */
   align?: 'left' | 'right' | 'center'
   /**
-   * valid when align is equal to center
-   * @default 0
+   * The left and right margins of the cell
+   * @default 0 (character)
    */
   paddingX?: number
   /**
-   * valid when align is equal to center
-   * @default 0
+   * The top and bome margins of the cell
+   * @default 0 (line)
    */
   paddingY?: number
   /**
-   * valid when align is't equals to center
-   * @default 20
-   */
-  width?: number
-  /**
+   * Valid when table.border is `false`!
    * @default 0
    */
   gapX?: number
@@ -41,3 +41,5 @@ export interface OptionType extends UserOptionType {
   table: Required<TableType>
   cell: Required<CellType>
 }
+
+export type PrimaryType = string | number | boolean

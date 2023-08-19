@@ -1,27 +1,81 @@
-import p from 'picocolors'
-import { NTLog } from '../src/index'
-const ntLog = new NTLog({
+/* eslint-disable eslint-comments/no-unlimited-disable */
+/* eslint-disable */
+import { Tablegger } from '../src/index'
+
+const logger = new Tablegger({
   table: {
-    column: 2,
+    border: true,
+    column: 3, // Set column
   },
   cell: {
-    gapX: 4,
-    align: 'left',
+  },
+})
+
+logger.add('Variety')
+console.log(logger.toString())
+/**
+┌───────┬┬┐
+│Variety│││
+└───────┴┴┘
+*/
+
+logger.add('is')
+console.log(logger.toString())
+/**
+┌───────┬──┬┐
+│Variety│is││
+└───────┴──┴┘
+*/
+
+logger.add('the')
+console.log(logger.toString())
+/**
+┌───────┬──┬───┐
+│Variety│is│the│
+└───────┴──┴───┘
+*/
+
+logger.add('spice')
+console.log(logger.toString())
+/**
+┌───────┬──┬───┐
+│Variety│is│the│
+├───────┼──┼───┤
+│spice  │  │   │
+└───────┴──┴───┘
+ */
+
+logger.add('of')
+console.log(logger.toString())
+/**
+┌───────┬──┬───┐
+│Variety│is│the│
+├───────┼──┼───┤
+│spice  │of│   │
+└───────┴──┴───┘
+ */
+
+logger.add('life')
+console.log(logger.toString())
+/**
+┌───────┬──┬────┐
+│Variety│is│the │
+├───────┼──┼────┤
+│spice  │of│life│
+└───────┴──┴────┘
+ */
+
+// Overwrite existing string
+logger.set(1, 0, 'curse').setConfig({
+  cell: {
     paddingX: 2,
   },
 })
-ntLog.push('name')
-ntLog.push('age')
-ntLog.push(p.blue('hobby'))
-ntLog.push('take')
-ntLog.push('why')
-ntLog.push(p.underline('234300h4'))
-ntLog.push(p.bold('gf238884d'))
-ntLog.push('why')
-ntLog.push('why')
-ntLog.push('why')
-ntLog.push('why')
-
-console.log(
-  ntLog.toString(),
-)
+console.log(logger.toString())
+/**
+┌───────────┬──────┬────────┐
+│  Variety  │  is  │  the   │
+├───────────┼──────┼────────┤
+│  curse    │  of  │  life  │
+└───────────┴──────┴────────┘
+ */

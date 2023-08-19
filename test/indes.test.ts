@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import p from 'picocolors'
-import { NTLog } from '../src/index'
+import { Tablegger } from '../src/index'
 describe('test', () => {
   it('should workd right', () => {
-    const ntLog = new NTLog({
+    const tablegger = new Tablegger({
       table: {
         column: 3,
       },
@@ -11,25 +11,32 @@ describe('test', () => {
         gapX: 4,
         align: 'right',
         paddingX: 2,
+        paddingY: 1,
       },
     })
-    ntLog.push(p.bgYellow('nam2sdfsdfs34e'))
-    ntLog.push('ag234e')
-    ntLog.push(p.red('hobby'))
-    ntLog.push('take')
-    ntLog.push('why')
-    ntLog.push('wh23y')
-    ntLog.push('why')
-    expect(ntLog.toString()).toMatchInlineSnapshot(`
-      "  [43mnam2sdfsdfs34e[49m  @@@@  ag234e  @@@@  [31mhobby[39m  
-                  take  @@@@     why  @@@@  wh23y  
-                   why  @@@@          @@@@         
+    tablegger.add(p.bgYellow('nam2sdfsdfs34e'))
+    tablegger.add('ag234e')
+    tablegger.add(p.red('hobby'))
+    tablegger.add('take')
+    tablegger.add('why')
+    tablegger.add('wh23y')
+    tablegger.add('why')
+    expect(tablegger.toString()).toMatchInlineSnapshot(`
+      "
+        [43mnam2sdfsdfs34e[49m        ag234e        [31mhobby[39m  
+
+
+                  take           why        wh23y  
+
+
+                   why                             
+
       "
     `)
   })
 
   it('should workd left', () => {
-    const ntLog = new NTLog({
+    const tablegger = new Tablegger({
       table: {
         column: 2,
       },
@@ -37,30 +44,30 @@ describe('test', () => {
         gapX: 4,
       },
     })
-    ntLog.push('name')
-    ntLog.push('age')
-    ntLog.push(p.blue('hobby'))
-    ntLog.push('take')
-    ntLog.push('why')
-    ntLog.push(p.underline('234300h4'))
-    ntLog.push(p.bold('gf238884d'))
-    ntLog.push('why')
-    ntLog.push('why')
-    ntLog.push('why')
-    ntLog.push('why')
-    expect(ntLog.toString()).toMatchInlineSnapshot(`
-      "name     @@@@age     
-      [34mhobby[39m    @@@@take    
-      why      @@@@[4m234300h4[24m
-      [1mgf238884d[22m@@@@why     
-      why      @@@@why     
-      why      @@@@        
+    tablegger.add('name')
+    tablegger.add('age')
+    tablegger.add(p.blue('hobby'))
+    tablegger.add('take')
+    tablegger.add('why')
+    tablegger.add(p.underline('234300h4'))
+    tablegger.add(p.bold('gf238884d'))
+    tablegger.add('why')
+    tablegger.add('why')
+    tablegger.add('why')
+    tablegger.add('why')
+    expect(tablegger.toString()).toMatchInlineSnapshot(`
+      "name         age     
+      [34mhobby[39m        take    
+      why          [4m234300h4[24m
+      [1mgf238884d[22m    why     
+      why          why     
+      why                  
       "
     `)
   })
 
   it('should workd center', () => {
-    const ntLog = new NTLog({
+    const tablegger = new Tablegger({
       table: {
         column: 2,
         border: true,
@@ -72,24 +79,53 @@ describe('test', () => {
         align: 'center',
       },
     })
-    ntLog.push('name')
-    ntLog.push('agssss3sse')
-    ntLog.push(p.blue('hohhhbby'))
-    ntLog.push(p.bold('take'))
-    ntLog.push('why')
-    ntLog.push(p.red('jjhh'))
-    expect(ntLog.toString()).toMatchInlineSnapshot(`
+    tablegger.add('name')
+    tablegger.add('agssss3sse')
+    tablegger.add(p.blue('hohhhbby'))
+    tablegger.add(p.bold('take'))
+    tablegger.add('why')
+    tablegger.add(p.red('jjhh'))
+    expect(tablegger.toString()).toMatchInlineSnapshot(`
       "┌────────────┬──────────────┐
+      │            │              │
       │            │              │
       │    name    │  agssss3sse  │
       │            │              │
+      │            │              │
       ├────────────┼──────────────┤
+      │            │              │
       │            │              │
       │  [34mhohhhbby[39m  │     [1mtake[22m     │
       │            │              │
+      │            │              │
       ├────────────┼──────────────┤
       │            │              │
+      │            │              │
       │    why     │     [31mjjhh[39m     │
+      │            │              │
+      │            │              │
+      └────────────┴──────────────┘
+      "
+    `)
+    tablegger.set(2, 1, p.red('anything'))
+    expect(tablegger.toString()).toMatchInlineSnapshot(`
+      "┌────────────┬──────────────┐
+      │            │              │
+      │            │              │
+      │    name    │  agssss3sse  │
+      │            │              │
+      │            │              │
+      ├────────────┼──────────────┤
+      │            │              │
+      │            │              │
+      │  [34mhohhhbby[39m  │     [1mtake[22m     │
+      │            │              │
+      │            │              │
+      ├────────────┼──────────────┤
+      │            │              │
+      │            │              │
+      │    why     │   [31manything[39m   │
+      │            │              │
       │            │              │
       └────────────┴──────────────┘
       "
