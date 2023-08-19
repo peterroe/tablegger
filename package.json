@@ -1,6 +1,6 @@
 {
   "name": "node-table-log",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "packageManager": "pnpm@7.31.0",
   "description": "typescript-template",
   "author": "peterroe",
@@ -39,6 +39,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
+  "dependencies": {},
   "devDependencies": {
     "@antfu/eslint-config": "0.35.3",
     "@types/node": "^18.15.11",
