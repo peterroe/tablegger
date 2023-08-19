@@ -65,7 +65,7 @@ console.log(logger.toString())
 ├────────┼─────────────────┼─────────┤
 │   4    │   Alice         │   30    │
 └────────┴─────────────────┴─────────┘
- */
+*/
 
 // Override conifg(Auto merge)
 logger.setConfig({
@@ -88,7 +88,7 @@ console.log(logger.toString())
 ├────────┼─────────────────┼─────────┤
 │   4    │      Alice      │   30    │
 └────────┴─────────────────┴─────────┘
- */
+*/
 
 logger.setConfig({
   table: {
@@ -109,12 +109,12 @@ id     name            age
 2      Smithsonian     24
 3      Bob             27
 4      Alice           30
- */
+*/
 ```
 
 **Flexible**
 
-Actually, You can insert any table element in an position
+Actually, You can insert any table element in any position
 
 ```ts
 import { Tablegger } from '../src/index'
@@ -160,7 +160,7 @@ console.log(logger.toString())
 ├───────┼──┼───┤
 │spice  │  │   │
 └───────┴──┴───┘
- */
+*/
 
 logger.add('of')
 console.log(logger.toString())
@@ -170,7 +170,7 @@ console.log(logger.toString())
 ├───────┼──┼───┤
 │spice  │of│   │
 └───────┴──┴───┘
- */
+*/
 
 logger.add('life')
 console.log(logger.toString())
@@ -180,7 +180,7 @@ console.log(logger.toString())
 ├───────┼──┼────┤
 │spice  │of│life│
 └───────┴──┴────┘
- */
+*/
 
 // Overwrite existing string
 logger.set(1, 0, 'curse').setConfig({
@@ -195,7 +195,7 @@ console.log(logger.toString())
 ├───────────┼──────┼────────┤
 │  curse    │  of  │  life  │
 └───────────┴──────┴────────┘
- */
+*/
 ```
 
 ## Interface
