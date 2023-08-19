@@ -1,6 +1,6 @@
 {
   "name": "tablegger",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "packageManager": "pnpm@7.31.0",
   "description": "typescript-template",
   "author": "peterroe",
@@ -40,7 +40,8 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "defu": "^6.1.2"
+    "defu": "^6.1.2",
+    "tablegger": "^1.0.3"
   },
   "devDependencies": {
     "@antfu/eslint-config": "0.35.3",
