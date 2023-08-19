@@ -18,9 +18,14 @@ export interface CellType {
   align?: 'left' | 'right' | 'center'
   /**
    * valid when align is equal to center
-   * @default 10
+   * @default 0
    */
   paddingX?: number
+  /**
+   * valid when align is equal to center
+   * @default 0
+   */
+  paddingY?: number
   /**
    * valid when align is't equals to center
    * @default 20
