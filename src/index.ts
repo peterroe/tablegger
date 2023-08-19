@@ -1,5 +1,5 @@
 import { defu } from 'defu'
-import type { OptionType, UserOptionType } from './type'
+import type { OptionType, PrimaryType, UserOptionType } from './type'
 
 const defaultOption: OptionType = {
   table: {
@@ -10,30 +10,29 @@ const defaultOption: OptionType = {
     paddingX: 0,
     paddingY: 0,
     align: 'left',
-    width: 20,
-    gapX: 4,
+    gapX: 0,
   },
 }
 
-export class NTLog {
-  option: OptionType
+export class Tablegger {
+  private option: OptionType
   /**
    * User's data source
    */
-  data: string[][]
+  private data: string[][]
   /**
    * Current row index
    */
-  i = 0
+  private i = 0
   /**
    * Current column index
    */
-  j = 0
-  columnsWidth: number[]
+  private j = 0
+  private columnsWidth: number[]
   /**
    * Output result
    */
-  result = ''
+  private result = ''
   constructor(option?: Partial<UserOptionType>) {
     this.option = defu(option, defaultOption)
     const { table: { column } } = this.option
@@ -43,7 +42,21 @@ export class NTLog {
     this.columnsWidth = new Array(column)
   }
 
-  push(word: string) {
+  public add(words: PrimaryType | PrimaryType[] = '') {
+    if (!Array.isArray(words))
+      this.push(words.toString())
+
+    else
+      words.forEach(word => this.push(word.toString()))
+  }
+
+  public setHeader(words: PrimaryType[]) {
+    this.option.table.column = words.length
+    this.add(words)
+    return this
+  }
+
+  private push(word: string) {
     const { table: { column } } = this.option
     // Auto Wrap if current column is full
     if (this.j >= column) {
@@ -56,22 +69,21 @@ export class NTLog {
     this.j++
   }
 
-  replace(i: number, j: number, word: string) {
+  public set(i: number, j: number, word: string) {
     this.data[i][j] = word
+    return this
   }
 
-  get maxRowLength() {
-    const { table: { column } } = this.option
-    const maxRowWordsLength = this.columnsWidth.reduce((pre, cur) => {
-      return pre + cur
-    }, 0)
-    const gapAndPaddingLength
-      = (column - 1) * this.option.cell.gapX
-      + column * this.option.cell.paddingX * 2
-    return maxRowWordsLength + gapAndPaddingLength
+  /**
+   * Set config
+   * @param option
+   */
+  public setConfig(option?: Partial<UserOptionType>) {
+    this.option = defu(option, this.option)
+    return this
   }
 
-  calcColumnsWidth() {
+  private calcColumnsWidth() {
     const { table: { column } } = this.option
     for (let j = 0; j < column; j++) {
       // Collect each column word
@@ -83,11 +95,7 @@ export class NTLog {
     }
   }
 
-  addPaddingY() {
-
-  }
-
-  addBorderHeader() {
+  private addBorderHeader() {
     const { cell: { paddingX } } = this.option
     this.result += '┌'
     this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
@@ -98,7 +106,7 @@ export class NTLog {
     this.result += '┐\n'
   }
 
-  addBorderRow() {
+  private addBorderRow() {
     const { cell: { paddingX } } = this.option
     this.result += '├'
     this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
@@ -109,8 +117,8 @@ export class NTLog {
     this.result += '┤\n'
   }
 
-  addPaddingYRow() {
-    const { table: { border }, cell: { paddingY, paddingX } } = this.option
+  private addPaddingYRow() {
+    const { table: { border }, cell: { paddingX } } = this.option
     if (border) {
       this.result += '│'
       this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
@@ -125,7 +133,7 @@ export class NTLog {
     }
   }
 
-  addBorderFooter() {
+  private addBorderFooter() {
     const { cell: { paddingX } } = this.option
     this.result += '└'
     this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
@@ -136,8 +144,12 @@ export class NTLog {
     this.result += '┘\n'
   }
 
-  toString() {
-    const { table: { column, border }, cell: { paddingX } } = this.option
+  public get rawData() {
+    return this.data
+  }
+
+  public toString() {
+    const { table: { border }, cell: { paddingY } } = this.option
     // Reset result
     this.result = ''
     // Get columnsWidth
@@ -146,10 +158,11 @@ export class NTLog {
       this.addBorderHeader()
 
     for (let i = 0; i < this.data.length; i++) {
-      this.addPaddingYRow()
+      let t = 0
+      while (t++ < paddingY) this.addPaddingYRow()
+
       if (border)
         this.result += '│'
-
       for (let j = 0; j < this.data[i].length; j++) {
         // insert padding gap before each word
         this.result += ' '.repeat(this.option.cell.paddingX)
@@ -173,23 +186,20 @@ export class NTLog {
         this.result += ' '.repeat(this.option.cell.paddingX)
         if (border)
           this.result += '│'
-
-        if (j < this.data[j].length - 1)
-          this.result += '@'.repeat(this.option.cell.gapX)
+        if (j < this.data[i].length - 1)
+          this.result += ' '.repeat(this.option.cell.gapX)
       }
-      if (border)
-        this.result += '\n'
+      this.result += '\n'
 
-      this.addPaddingYRow()
+      t = 0
+      while (t++ < paddingY) this.addPaddingYRow()
+
       if (border && i < this.data.length - 1)
         this.addBorderRow()
-      else if (!border)
-        this.result += '\n'
     }
     if (border)
       this.addBorderFooter()
 
-    console.log(this.result)
     return this.result
   }
 }
@@ -212,7 +222,7 @@ function calcMaxEffectWordLength(rawWords: string[]) {
  * @param str
  * @returns
  */
-export function cleanColor(str: string) {
+function cleanColor(str: string) {
   // eslint-disable-next-line no-control-regex
   return str.replace(/\u001B\[[0-9;]*m/g, '')
 }

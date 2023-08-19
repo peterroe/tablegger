@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "defu": "^6.1.2",
-    "tablegger": "^1.0.3"
+    "tablegger": "^1.0.4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "0.35.3",
