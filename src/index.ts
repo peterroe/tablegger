@@ -4,7 +4,6 @@ import type { OptionType, PrimaryType, UserOptionType } from './type'
 const defaultOption: OptionType = {
   table: {
     border: false,
-    column: 3,
   },
   cell: {
     paddingX: 0,
@@ -19,7 +18,7 @@ export class Tablegger {
   /**
    * User's data source
    */
-  private data: string[][]
+  private data: string[][] = []
   /**
    * Current row index
    */
@@ -28,64 +27,39 @@ export class Tablegger {
    * Current column index
    */
   private j = 0
-  private columnsWidth: number[]
+  /**
+   * Maximum valid character width for each column
+   */
+  private columnsWidth: number[] = []
   /**
    * Output result
    */
   private result = ''
+  /**
+   * Columns for table
+   * Must be set by `SetColumn` or `SetHeader`
+   * @default 3
+   */
+  private column = 3
+
   constructor(option?: Partial<UserOptionType>) {
     this.option = defu(option, defaultOption)
-    const { table: { column } } = this.option
-    this.data = new Array(
-      new Array(column).fill(''),
-    )
-    this.columnsWidth = new Array(column)
-  }
-
-  public add(words: PrimaryType | PrimaryType[] = '') {
-    if (!Array.isArray(words))
-      this.push(words.toString())
-
-    else
-      words.forEach(word => this.push(word.toString()))
-  }
-
-  public setHeader(words: PrimaryType[]) {
-    this.option.table.column = words.length
-    this.add(words)
-    return this
   }
 
   private push(word: string) {
-    const { table: { column } } = this.option
     // Auto Wrap if current column is full
-    if (this.j >= column) {
+    if (this.j >= this.column) {
       this.i++
       this.j = 0
-      this.data.push(new Array(column).fill(''))
+      this.data.push(new Array(this.column).fill(''))
     }
     // Inset word to data
     this.data[this.i][this.j] = word
     this.j++
   }
 
-  public set(i: number, j: number, word: string) {
-    this.data[i][j] = word
-    return this
-  }
-
-  /**
-   * Set config
-   * @param option
-   */
-  public setConfig(option?: Partial<UserOptionType>) {
-    this.option = defu(option, this.option)
-    return this
-  }
-
   private calcColumnsWidth() {
-    const { table: { column } } = this.option
-    for (let j = 0; j < column; j++) {
+    for (let j = 0; j < this.column; j++) {
       // Collect each column word
       const columWords: string[] = []
       for (let i = 0; i < this.data.length; i++)
@@ -144,10 +118,72 @@ export class Tablegger {
     this.result += '┘\n'
   }
 
+  /**
+   * Add table elements
+   * @param words
+   */
+  public add(words: PrimaryType | PrimaryType[] = '') {
+    if (!Array.isArray(words))
+      this.push(words.toString())
+
+    else
+      words.forEach(word => this.push(word.toString()))
+
+    return this
+  }
+
+  /**
+   * Set table header
+   * @param words
+   */
+  public setHeader(words: PrimaryType[]) {
+    this.column = words.length
+    this.add(words)
+    return this
+  }
+
+  /**
+   * Set the number of table columns
+   * @param column
+   */
+  public setColumn(column: number) {
+    this.data = new Array(
+      new Array(column).fill(''),
+    )
+    this.columnsWidth = new Array(column)
+    return this
+  }
+
+  /**
+   * Modify data at a location
+   * @param i Abscissa
+   * @param j Ordinate
+   * @param word your data
+   */
+  public set(i: number, j: number, word: string) {
+    this.data[i][j] = word
+    return this
+  }
+
+  /**
+   * Override config
+   * @param option
+   */
+  public setConfig(option?: Partial<UserOptionType>) {
+    this.option = defu(option, this.option)
+    return this
+  }
+
+  /**
+   * Get raw data
+   */
   public get rawData() {
     return this.data
   }
 
+  /**
+   * Generate result
+   */
   public toString() {
     const { table: { border }, cell: { paddingY } } = this.option
     // Reset result

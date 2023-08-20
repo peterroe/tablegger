@@ -29,21 +29,17 @@ const users = [
   { id: 4, name: 'Alice', age: 30 },
 
 ]
+const header = Object.keys(users[0])
 
 const logger = new Tablegger({
   table: {
     border: true,
   },
   cell: {
-    paddingY: 0,
     paddingX: 3,
   },
-})
-
-const header = Object.keys(users[0])
-
 // Support any control characters
-logger.setHeader(header.map(it => p.bold(p.green(it))))
+}).setHeader(header.map(it => p.bold(p.green(it))))
 
 users.forEach((user) => {
   header.forEach((key) => {
@@ -122,11 +118,10 @@ import { Tablegger } from '../src/index'
 const logger = new Tablegger({
   table: {
     border: true,
-    column: 3, // Set column
   },
   cell: {
   },
-})
+}).setColumn(3) // Set column
 
 logger.add('Variety')
 console.log(logger.toString())
@@ -201,28 +196,20 @@ console.log(logger.toString())
 ## Interface
 
 ```ts
-export interface UserOptionType {
+interface UserOptionType {
   table?: TableType
   cell?: CellType
 }
-
-export interface TableType {
+interface TableType {
   /**
    * Is need a border
    * @default true
    */
   border?: boolean
-  /**
-   * Must be init!
-   * or use setHeader() method!
-   * @default 3
-   */
-  column?: number
 }
-
-export interface CellType {
+interface CellType {
   /**
-   * @default left
+   * @default center
    */
   align?: 'left' | 'right' | 'center'
   /**
@@ -237,8 +224,50 @@ export interface CellType {
   paddingY?: number
   /**
    * Valid when table.border is `false`!
-   * @default 0 (character)
+   * @default 0
    */
   gapX?: number
 }
+type PrimaryType = string | number | boolean
+
+declare class Tablegger {
+  constructor(option?: Partial<UserOptionType>)
+  /**
+   * Add table elements
+   * @param words
+   */
+  add(words?: PrimaryType | PrimaryType[]): this
+  /**
+   * Set table header
+   * @param words
+   */
+  setHeader(words: PrimaryType[]): this
+  /**
+   * Set the number of table columns
+   * @param column
+   */
+  setColumn(column: number): this
+  /**
+   * Modify data at a location
+   * @param i Abscissa
+   * @param j Ordinate
+   * @param word your data
+   */
+  set(i: number, j: number, word: string): this
+  /**
+   * Override config
+   * @param option
+   */
+  setConfig(option?: Partial<UserOptionType>): this
+  /**
+   * Get raw data
+   */
+  get rawData(): string[][]
+  /**
+   * Generate result
+   */
+  toString(): string
+}
+
+export { Tablegger }
 ```

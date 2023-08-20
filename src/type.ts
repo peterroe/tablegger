@@ -9,10 +9,6 @@ export interface TableType {
    * @default true
    */
   border?: boolean
-  /**
-   * The number of columns in the table
-   */
-  column?: number
 }
 
 export interface CellType {

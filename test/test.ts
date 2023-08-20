@@ -5,11 +5,10 @@ import { Tablegger } from '../src/index'
 const logger = new Tablegger({
   table: {
     border: true,
-    column: 3, // Set column
   },
   cell: {
   },
-})
+}).setColumn(3)
 
 logger.add('Variety')
 console.log(logger.toString())

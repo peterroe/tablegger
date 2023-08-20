@@ -4,16 +4,13 @@ import { Tablegger } from '../src/index'
 describe('test', () => {
   it('should workd right', () => {
     const tablegger = new Tablegger({
-      table: {
-        column: 3,
-      },
       cell: {
         gapX: 4,
         align: 'right',
         paddingX: 2,
         paddingY: 1,
       },
-    })
+    }).setColumn(3)
     tablegger.add(p.bgYellow('nam2sdfsdfs34e'))
     tablegger.add('ag234e')
     tablegger.add(p.red('hobby'))
@@ -37,13 +34,10 @@ describe('test', () => {
 
   it('should workd left', () => {
     const tablegger = new Tablegger({
-      table: {
-        column: 2,
-      },
       cell: {
         gapX: 4,
       },
-    })
+    }).setColumn(2)
     tablegger.add('name')
     tablegger.add('age')
     tablegger.add(p.blue('hobby'))
@@ -69,7 +63,6 @@ describe('test', () => {
   it('should workd center', () => {
     const tablegger = new Tablegger({
       table: {
-        column: 2,
         border: true,
       },
       cell: {
