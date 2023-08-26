@@ -1,5 +1,6 @@
 import { defu } from 'defu'
 import { consola } from 'consola'
+import stringWidth from 'string-width'
 import type { OptionType, PrimaryType, UserOptionType } from './type'
 const defaultOption: OptionType = {
   table: {
@@ -207,8 +208,8 @@ export class Tablegger {
         this.result += ' '.repeat(this.option.cell.paddingX)
 
         const rawWord = this.data[i][j]
-        const pureWord = cleanColor(rawWord)
-        const gapLen = this.columnsWidth[j] - pureWord.length
+        const pureWordLen = stringWidth(rawWord)
+        const gapLen = this.columnsWidth[j] - pureWordLen
 
         if (this.option.cell.align === 'right') {
           this.result = this.result + ' '.repeat(gapLen) + rawWord
@@ -250,18 +251,8 @@ export class Tablegger {
 function calcMaxEffectWordLength(rawWords: string[]) {
   let len = 0
   for (const word of rawWords) {
-    const effectWordLength = cleanColor(word).length
+    const effectWordLength = stringWidth(word)
     len = Math.max(len, effectWordLength)
   }
   return len
-}
-
-/**
- * Cleans the control characters from the word
- * @param str
- * @returns
- */
-function cleanColor(str: string) {
-  // eslint-disable-next-line no-control-regex
-  return str.replace(/\u001B\[[0-9;]*m/g, '')
 }
