@@ -4,8 +4,9 @@ For printing tabular structured data, optional configuration and automatic align
 
 ## Feature
 
-* 📦 Out-of-the-box control character support.
+* 📦 Out-of-the-box ANSI code support.
 * ⚙️ Supports flexible configurations such as borders and paddings.
+* 🔧 Automatic alignment.
 * 🤙🏻 Modify configuration anytime, anywhere.
 * 🦾 TypeScript, of course.
 
