@@ -40,7 +40,9 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
+    "consola": "^3.2.3",
     "defu": "^6.1.2",
+    "string-width": "^6.1.0",
     "tablegger": "^1.0.4"
   },
   "devDependencies": {

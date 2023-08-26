@@ -1,6 +1,6 @@
 import { defu } from 'defu'
+import { consola } from 'consola'
 import type { OptionType, PrimaryType, UserOptionType } from './type'
-
 const defaultOption: OptionType = {
   table: {
     border: false,
@@ -18,7 +18,7 @@ export class Tablegger {
   /**
    * User's data source
    */
-  private data: string[][] = []
+  private data: string[][] = [[]]
   /**
    * Current row index
    */
@@ -161,6 +161,9 @@ export class Tablegger {
    * @param word your data
    */
   public set(i: number, j: number, word: string) {
+    if (i > this.i || j > this.j)
+      consola.error(`Invalid parameters, i must be less than or equal to ${this.i}, and j must be greater than or equal to ${this.j}`)
+
     this.data[i][j] = word
     return this
   }

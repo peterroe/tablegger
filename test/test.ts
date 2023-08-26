@@ -78,3 +78,6 @@ console.log(logger.toString())
 │  curse    │  of  │  life  │
 └───────────┴──────┴────────┘
  */
+
+
+logger.set(3,2,' 23')
