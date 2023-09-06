@@ -1,3 +1,5 @@
+import type { BorderArray, TableStyleArrayTheme } from './const'
+
 export interface UserOptionType {
   table?: TableType
   cell?: CellType
@@ -6,9 +8,9 @@ export interface UserOptionType {
 export interface TableType {
   /**
    * Is need a border
-   * @default true
+   * @default noBorder
    */
-  border?: boolean
+  theme?: 'border' | 'noBorder' | TableStyleArrayTheme | BorderArray[]
 }
 
 export interface CellType {
@@ -38,4 +40,4 @@ export interface OptionType extends UserOptionType {
   cell: Required<CellType>
 }
 
-export type PrimaryType = string | number | boolean
+export type PrimaryType = string

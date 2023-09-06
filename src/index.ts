@@ -2,9 +2,10 @@ import { defu } from 'defu'
 import { consola } from 'consola'
 import stringWidth from 'string-width'
 import type { OptionType, PrimaryType, UserOptionType } from './type'
+import { characterArrayToObject } from './utils'
 const defaultOption: OptionType = {
   table: {
-    border: false,
+    theme: 'noBorder',
   },
   cell: {
     paddingX: 0,
@@ -19,7 +20,7 @@ export class Tablegger {
   /**
    * User's data source
    */
-  private data: string[][] = [[]]
+  private data: string[][] = [['']]
   /**
    * Current row index
    */
@@ -41,7 +42,6 @@ export class Tablegger {
    * Must be set by `SetColumn` or `SetHeader`
    * @default 3
    */
-  private column = 3
 
   constructor(option?: Partial<UserOptionType>) {
     this.option = defu(option, defaultOption)
@@ -54,6 +54,7 @@ export class Tablegger {
       this.j = 0
       this.data.push(new Array(this.column).fill(''))
     }
+    while (this.data[this.i][this.j]) this.j++
     // Inset word to data
     this.data[this.i][this.j] = word
     this.j++
@@ -72,58 +73,74 @@ export class Tablegger {
 
   private addBorderHeader() {
     const { cell: { paddingX } } = this.option
-    this.result += '┌'
+    const { borderTop } = this.themeChars
+    this.result += borderTop.left
     this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
-      this.result += '─'.repeat(column)
+      this.result += borderTop.horizontal.repeat(column)
       if (index < this.columnsWidth.length - 1)
-        this.result += '┬'
+        this.result += borderTop.intersection
     })
-    this.result += '┐\n'
+    this.result += `${borderTop.right}\n`
   }
 
   private addBorderRow() {
     const { cell: { paddingX } } = this.option
-    this.result += '├'
+    const { borderMiddle } = this.themeChars
+    this.result += borderMiddle.left
     this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
-      this.result += '─'.repeat(column)
+      this.result += borderMiddle.horizontal.repeat(column)
       if (index < this.columnsWidth.length - 1)
-        this.result += '┼'
+        this.result += borderMiddle.intersection
     })
-    this.result += '┤\n'
+    this.result += `${borderMiddle.right}\n`
   }
 
   private addPaddingYRow() {
-    const { table: { border }, cell: { paddingX } } = this.option
-    if (border) {
-      this.result += '│'
-      this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
-        this.result += ' '.repeat(column)
-        if (index < this.columnsWidth.length - 1)
-          this.result += '│'
-      })
-      this.result += '│\n'
-    }
-    else {
-      this.result += '\n'.repeat(this.option.cell.paddingY)
-    }
+    const { cell: { paddingX } } = this.option
+    const { borderGap } = this.themeChars
+    this.result += borderGap.left
+    this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+      this.result += borderGap.horizontal.repeat(column)
+      if (index < this.columnsWidth.length - 1)
+        this.result += borderGap.intersection
+    })
+    this.result += `${borderGap.right}\n`
   }
 
   private addBorderFooter() {
     const { cell: { paddingX } } = this.option
-    this.result += '└'
+    const { borderBottom } = this.themeChars
+    this.result += borderBottom.left
     this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
-      this.result += '─'.repeat(column)
+      this.result += borderBottom.horizontal.repeat(column)
       if (index < this.columnsWidth.length - 1)
-        this.result += '┴'
+        this.result += borderBottom.intersection
     })
-    this.result += '┘\n'
+    this.result += `${borderBottom.right}\n`
+  }
+
+  private get column() {
+    return Math.max(...this.data.map(row => row.length))
+  }
+
+  private get themeChars() {
+    return characterArrayToObject(this.option.table.theme)
+  }
+
+  private fillEmptyChar() {
+    for (let i = 0; i < this.data.length; i++) {
+      for (let j = 0; j < this.column; j++) {
+        if (this.data[i][j] === undefined)
+          this.data[i][j] = ''
+      }
+    }
   }
 
   /**
    * Add table elements
    * @param words
    */
-  public add(words: PrimaryType | PrimaryType[] = '') {
+  public add(words: string | string[] = '') {
     if (!Array.isArray(words))
       this.push(words.toString())
 
@@ -135,12 +152,47 @@ export class Tablegger {
 
   /**
    * Set table header
-   * @param words
+   * @param rowWords
+   * @param colWords
    */
-  public setHeader(words: PrimaryType[]) {
-    this.column = words.length
-    this.add(words)
+  public setHeaders(rowWords: PrimaryType[], colWords: PrimaryType[]) {
+    this.setRowHeaders(rowWords)
+      .setColHeaders(colWords)
     return this
+  }
+
+  /**
+   * Set table row header
+   * @param rowWords
+   */
+  public setRowHeaders(rowWords: PrimaryType[]) {
+    this.data[0] = rowWords.map(it => it.toString())
+    this.fillEmptyChar()
+    return this
+  }
+
+  /**
+   * Set table column header
+   * @param colWords
+   */
+  public setColHeaders(colWords: string[]) {
+    colWords.forEach((word, i) => {
+      if (!this.data[i + 1])
+        this.data[i + 1] = new Array(this.column).fill('')
+
+      this.data[i + 1][0] = word
+    })
+    return this
+  }
+
+  /**
+   * Add table row (Allow reset column)
+   * @param colWords
+   */
+  public addRow(newRow: Array<string>) {
+    this.data.push(newRow)
+    this.i = this.data.length - 1
+    this.j = newRow.length - 1
   }
 
   /**
@@ -178,6 +230,13 @@ export class Tablegger {
     return this
   }
 
+  public clearTable() {
+    for (let i = 0; i < this.data.length; i++) {
+      for (let j = 0; j < this.column; j++)
+        this.data[i][j] = ''
+    }
+  }
+
   /**
    * Get raw data
    */
@@ -189,22 +248,20 @@ export class Tablegger {
    * Generate result
    */
   public toString() {
-    const { table: { border }, cell: { paddingY } } = this.option
+    const { cell: { paddingY } } = this.option
     // Reset result
     this.result = ''
     // Get columnsWidth
     this.calcColumnsWidth()
-    if (border)
-      this.addBorderHeader()
+    this.addBorderHeader()
 
     for (let i = 0; i < this.data.length; i++) {
       let t = 0
       while (t++ < paddingY) this.addPaddingYRow()
 
-      if (border)
-        this.result += '│'
+      this.result += this.themeChars.borderGap.left
       for (let j = 0; j < this.data[i].length; j++) {
-        // insert padding gap before each word
+        // insert paddingX gap before each word
         this.result += ' '.repeat(this.option.cell.paddingX)
 
         const rawWord = this.data[i][j]
@@ -222,23 +279,25 @@ export class Tablegger {
           const endLen = gapLen - startLen
           this.result = this.result + ' '.repeat(startLen) + rawWord + ' '.repeat(endLen)
         }
-
+        // insert paddingX gap after each word
         this.result += ' '.repeat(this.option.cell.paddingX)
-        if (border)
-          this.result += '│'
-        if (j < this.data[i].length - 1)
+
+        if (j < this.data[i].length - 1) {
+          this.result += this.themeChars.borderGap.intersection
           this.result += ' '.repeat(this.option.cell.gapX)
+        }
       }
+      this.result += this.themeChars.borderGap.right
       this.result += '\n'
 
       t = 0
       while (t++ < paddingY) this.addPaddingYRow()
 
-      if (border && i < this.data.length - 1)
+      if (i < this.data.length - 1)
         this.addBorderRow()
     }
-    if (border)
-      this.addBorderFooter()
+    // if (border)
+    this.addBorderFooter()
 
     return this.result
   }
