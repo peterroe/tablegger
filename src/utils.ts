@@ -1,5 +1,5 @@
 import { defaultThemes } from './const'
-import type { BorderArray, TableStyleArrayTheme } from './const'
+import type { themeType } from './type'
 
 interface RowType {
   left: string
@@ -10,14 +10,15 @@ interface RowType {
 
 interface TableStyleType {
   borderTop: RowType
+  borderSep: RowType
   borderMiddle: RowType
   borderGap: RowType
   borderBottom: RowType
 }
 
-export function characterArrayToObject(borderStyle: 'border' | 'noBorder' | TableStyleArrayTheme | BorderArray[]): TableStyleType {
+export function characterArrayToObject(borderStyleTheme: themeType): TableStyleType {
   const matrix
-    = typeof borderStyle === 'string' ? defaultThemes[borderStyle] : borderStyle
+    = typeof borderStyleTheme !== 'object' ? defaultThemes[borderStyleTheme].matrix : borderStyleTheme.matrix
 
   return {
     borderTop: {
@@ -26,7 +27,7 @@ export function characterArrayToObject(borderStyle: 'border' | 'noBorder' | Tabl
       intersection: matrix[0][2],
       right: matrix[0][4],
     },
-    borderGap: {
+    borderSep: {
       left: matrix[1][0],
       horizontal: matrix[1][1],
       intersection: matrix[1][2],
@@ -37,6 +38,12 @@ export function characterArrayToObject(borderStyle: 'border' | 'noBorder' | Tabl
       horizontal: matrix[2][1],
       intersection: matrix[2][2],
       right: matrix[2][4],
+    },
+    borderGap: {
+      left: matrix[3][0],
+      horizontal: matrix[3][1],
+      intersection: matrix[3][2],
+      right: matrix[3][4],
     },
     borderBottom: {
       left: matrix[4][0],

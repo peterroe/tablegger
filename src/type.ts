@@ -1,16 +1,18 @@
-import type { BorderArray, TableStyleArrayTheme } from './const'
+import type { ThemeType, defaultThemes } from './const'
 
 export interface UserOptionType {
   table?: TableType
   cell?: CellType
 }
 
+export type themeType = keyof typeof defaultThemes | ThemeType
+
 export interface TableType {
   /**
    * Is need a border
    * @default noBorder
    */
-  theme?: 'border' | 'noBorder' | TableStyleArrayTheme | BorderArray[]
+  theme?: themeType
 }
 
 export interface CellType {
@@ -23,6 +25,8 @@ export interface CellType {
    * @default 0 (character)
    */
   paddingX?: number
+  paddingLeft?: number
+  paddingRight?: number
   /**
    * The top and bome margins of the cell
    * @default 0 (line)
@@ -32,7 +36,7 @@ export interface CellType {
    * Valid when table.border is `false`!
    * @default 0
    */
-  gapX?: number
+  gap?: number
 }
 
 export interface OptionType extends UserOptionType {

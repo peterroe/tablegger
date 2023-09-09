@@ -1,6 +1,8 @@
+import type { UserOptionType } from './type'
+
 export type BorderArray = [string, string, string, string, string]
 
-export type TableStyleArrayTheme = [
+export type TableStylyMatrix = [
   BorderArray,
   BorderArray,
   BorderArray,
@@ -8,15 +10,15 @@ export type TableStyleArrayTheme = [
   BorderArray,
 ]
 
-const borderStyle: TableStyleArrayTheme = [
+const borderStyleMatrix: TableStylyMatrix = [
   ['┌', '─', '┬', '─', '┐'],
-  ['│', ' ', '│', ' ', '│'],
+  ['├', '─', '┼', '─', '┤'],
   ['├', '─', '┼', '─', '┤'],
   ['│', ' ', '│', ' ', '│'],
   ['└', '─', '┴', '─', '┘'],
 ]
 
-const noBorderStyle = [
+const noBorderStyleMatrix: TableStylyMatrix = [
   [' ', ' ', ' ', ' ', ' '],
   [' ', ' ', ' ', ' ', ' '],
   [' ', ' ', ' ', ' ', ' '],
@@ -24,7 +26,42 @@ const noBorderStyle = [
   [' ', ' ', ' ', ' ', ' '],
 ]
 
+const hackerBorderStyleMatrix: TableStylyMatrix = [
+  [' ', ' ', ' ', ' ', ' '],
+  [' ', '-', '|', '-', ' '],
+  ['', '', '', '', ''],
+  [' ', ' ', '|', ' ', ' '],
+  [' ', ' ', ' ', ' ', ' '],
+]
+
+const doubleLineBorderStyleMatrix: TableStylyMatrix = [
+  [' ', ' ', ' ', ' ', ' '],
+  [' ', '-', '|', '-', ' '],
+  ['', '', '', '', ''],
+  [' ', ' ', '|', ' ', ' '],
+  [' ', ' ', ' ', ' ', ' '],
+]
+
+export interface ThemeType {
+  matrix: TableStylyMatrix
+  option?: UserOptionType
+}
+
+export interface DefaultThemeType {
+  [key: string]: ThemeType
+}
+
 export const defaultThemes = {
-  border: borderStyle,
-  noBorder: noBorderStyle,
+  table: {
+    matrix: borderStyleMatrix,
+  },
+  noBorder: {
+    matrix: noBorderStyleMatrix,
+  },
+  hackerBorder: {
+    matrix: hackerBorderStyleMatrix,
+  },
+  doubleLine: {
+    matrix: doubleLineBorderStyleMatrix,
+  },
 }

@@ -9,9 +9,11 @@ const defaultOption: OptionType = {
   },
   cell: {
     paddingX: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
     paddingY: 0,
     align: 'left',
-    gapX: 0,
+    gap: 0,
   },
 }
 
@@ -71,50 +73,83 @@ export class Tablegger {
     }
   }
 
-  private addBorderHeader() {
-    const { cell: { paddingX } } = this.option
+  private addHeaderTopBorderRow() {
+    const { cell: { paddingLeft, paddingRight, gap } } = this.option
     const { borderTop } = this.themeChars
     this.result += borderTop.left
-    this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+    this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
       this.result += borderTop.horizontal.repeat(column)
-      if (index < this.columnsWidth.length - 1)
+      if (index < this.columnsWidth.length - 1) {
+        this.result += ' '.repeat(gap)
         this.result += borderTop.intersection
+        this.result += ' '.repeat(gap)
+      }
     })
     this.result += `${borderTop.right}\n`
   }
 
   private addBorderRow() {
-    const { cell: { paddingX } } = this.option
+    const { cell: { paddingLeft, paddingRight, gap } } = this.option
     const { borderMiddle } = this.themeChars
+    // no border if borderMiddle value is empty
+    if (!Object.values(borderMiddle).filter(Boolean).length)
+      return
+
     this.result += borderMiddle.left
-    this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+    // this.result += ' '.repeat(gapX)
+    this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
       this.result += borderMiddle.horizontal.repeat(column)
-      if (index < this.columnsWidth.length - 1)
+      if (index < this.columnsWidth.length - 1) {
+        this.result += ' '.repeat(gap)
         this.result += borderMiddle.intersection
+        this.result += ' '.repeat(gap)
+      }
     })
     this.result += `${borderMiddle.right}\n`
   }
 
+  private addHeaderBottomBorderRow() {
+    const { cell: { paddingLeft, paddingRight, gap } } = this.option
+    const { borderSep } = this.themeChars
+    this.result += borderSep.left
+    // this.result += ' '.repeat(gapX)
+    this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
+      this.result += borderSep.horizontal.repeat(column)
+      if (index < this.columnsWidth.length - 1) {
+        this.result += ' '.repeat(gap)
+        this.result += borderSep.intersection
+        this.result += ' '.repeat(gap)
+      }
+    })
+    this.result += `${borderSep.right}\n`
+  }
+
   private addPaddingYRow() {
-    const { cell: { paddingX } } = this.option
+    const { cell: { paddingLeft, paddingRight, gap } } = this.option
     const { borderGap } = this.themeChars
     this.result += borderGap.left
-    this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+    this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
       this.result += borderGap.horizontal.repeat(column)
-      if (index < this.columnsWidth.length - 1)
+      if (index < this.columnsWidth.length - 1) {
+        this.result += ' '.repeat(gap)
         this.result += borderGap.intersection
+        this.result += ' '.repeat(gap)
+      }
     })
     this.result += `${borderGap.right}\n`
   }
 
-  private addBorderFooter() {
-    const { cell: { paddingX } } = this.option
+  private addBorderFooterRow() {
+    const { cell: { paddingLeft, paddingRight, gap } } = this.option
     const { borderBottom } = this.themeChars
     this.result += borderBottom.left
-    this.columnsWidth.map(column => column + paddingX * 2).forEach((column, index) => {
+    this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
       this.result += borderBottom.horizontal.repeat(column)
-      if (index < this.columnsWidth.length - 1)
+      if (index < this.columnsWidth.length - 1) {
+        this.result += ' '.repeat(gap)
         this.result += borderBottom.intersection
+        this.result += ' '.repeat(gap)
+      }
     })
     this.result += `${borderBottom.right}\n`
   }
@@ -248,21 +283,21 @@ export class Tablegger {
    * Generate result
    */
   public toString() {
-    const { cell: { paddingY } } = this.option
+    const { cell: { paddingY, gap } } = this.option
     // Reset result
     this.result = ''
     // Get columnsWidth
     this.calcColumnsWidth()
-    this.addBorderHeader()
+    this.addHeaderTopBorderRow()
 
     for (let i = 0; i < this.data.length; i++) {
       let t = 0
       while (t++ < paddingY) this.addPaddingYRow()
-
       this.result += this.themeChars.borderGap.left
+
       for (let j = 0; j < this.data[i].length; j++) {
         // insert paddingX gap before each word
-        this.result += ' '.repeat(this.option.cell.paddingX)
+        this.result += ' '.repeat(this.option.cell.paddingLeft)
 
         const rawWord = this.data[i][j]
         const pureWordLen = stringWidth(rawWord)
@@ -280,24 +315,34 @@ export class Tablegger {
           this.result = this.result + ' '.repeat(startLen) + rawWord + ' '.repeat(endLen)
         }
         // insert paddingX gap after each word
-        this.result += ' '.repeat(this.option.cell.paddingX)
+        this.result += ' '.repeat(this.option.cell.paddingRight)
 
         if (j < this.data[i].length - 1) {
+          this.result += ' '.repeat(gap)
           this.result += this.themeChars.borderGap.intersection
-          this.result += ' '.repeat(this.option.cell.gapX)
+          this.result += ' '.repeat(gap)
         }
       }
-      this.result += this.themeChars.borderGap.right
+      if (i === 1)
+        this.result += this.themeChars.borderGap.right
+
+      else
+        this.result += this.themeChars.borderGap.right
       this.result += '\n'
 
       t = 0
       while (t++ < paddingY) this.addPaddingYRow()
 
-      if (i < this.data.length - 1)
-        this.addBorderRow()
+      if (i < this.data.length - 1) {
+        if (i === 0)
+          this.addHeaderBottomBorderRow()
+
+        else
+          this.addBorderRow()
+      }
     }
     // if (border)
-    this.addBorderFooter()
+    this.addBorderFooterRow()
 
     return this.result
   }
