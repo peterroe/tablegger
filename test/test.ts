@@ -1,35 +1,39 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
+/* eslint-disable no-console */
 import p from 'picocolors'
 import { Tablegger } from '../src/index'
 
 const logger = new Tablegger({
-  table: {
-    theme: 'hackerBorder',
-  },
-  cell: {
-    paddingRight: 4,
-    gap: 1
-  },
+  theme: 'singleLine',
+  paddingRight: 4,
+  gap: 1,
 }).setColumn(3)
 
 logger.add('Stage').add('Time').add('Rss')
   .add('Init').add(p.red('230.ms')).add('234ms')
   .add('Import').add('43ms')
 console.log(logger.toString())
+
 logger.setConfig({
-  table: {
-    theme: 'table'
-  },
-  cell: {
-    gap: 0
-  }
+  theme: 'table',
+  gap: 0,
 })
 console.log(logger.toString())
 logger.setConfig({
-  table: {
-    theme: 'noBorder'
-  }
+  theme: 'noBorder',
+})
+console.log(logger.toString())
+logger.setConfig({
+  theme: 'doubleLine',
+})
+console.log(logger.toString())
+
+logger.setConfig({
+  theme: 'intersect',
+})
+console.log(logger.toString())
+
+logger.setConfig({
+  theme: 'horizontalLine',
 })
 console.log(logger.toString())
 

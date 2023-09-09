@@ -1,24 +1,20 @@
 import { defu } from 'defu'
 import { consola } from 'consola'
 import stringWidth from 'string-width'
-import type { OptionType, PrimaryType, UserOptionType } from './type'
+import type { OptionType, PrimaryType } from './type'
 import { characterArrayToObject } from './utils'
-const defaultOption: OptionType = {
-  table: {
-    theme: 'noBorder',
-  },
-  cell: {
-    paddingX: 0,
-    paddingLeft: 0,
-    paddingRight: 0,
-    paddingY: 0,
-    align: 'left',
-    gap: 0,
-  },
+const defaultOption: Required<OptionType> = {
+  theme: 'noBorder',
+  paddingX: 0,
+  paddingLeft: 0,
+  paddingRight: 0,
+  paddingY: 0,
+  align: 'left',
+  gap: 0,
 }
 
 export class Tablegger {
-  private option: OptionType
+  private option: Required<OptionType>
   /**
    * User's data source
    */
@@ -45,7 +41,7 @@ export class Tablegger {
    * @default 3
    */
 
-  constructor(option?: Partial<UserOptionType>) {
+  constructor(option?: OptionType) {
     this.option = defu(option, defaultOption)
   }
 
@@ -74,7 +70,7 @@ export class Tablegger {
   }
 
   private addHeaderTopBorderRow() {
-    const { cell: { paddingLeft, paddingRight, gap } } = this.option
+    const { paddingLeft, paddingRight, gap } = this.option
     const { borderTop } = this.themeChars
     this.result += borderTop.left
     this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
@@ -89,7 +85,7 @@ export class Tablegger {
   }
 
   private addBorderRow() {
-    const { cell: { paddingLeft, paddingRight, gap } } = this.option
+    const { paddingLeft, paddingRight, gap } = this.option
     const { borderMiddle } = this.themeChars
     // no border if borderMiddle value is empty
     if (!Object.values(borderMiddle).filter(Boolean).length)
@@ -109,7 +105,7 @@ export class Tablegger {
   }
 
   private addHeaderBottomBorderRow() {
-    const { cell: { paddingLeft, paddingRight, gap } } = this.option
+    const { paddingLeft, paddingRight, gap } = this.option
     const { borderSep } = this.themeChars
     this.result += borderSep.left
     // this.result += ' '.repeat(gapX)
@@ -125,7 +121,7 @@ export class Tablegger {
   }
 
   private addPaddingYRow() {
-    const { cell: { paddingLeft, paddingRight, gap } } = this.option
+    const { paddingLeft, paddingRight, gap } = this.option
     const { borderGap } = this.themeChars
     this.result += borderGap.left
     this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
@@ -140,7 +136,7 @@ export class Tablegger {
   }
 
   private addBorderFooterRow() {
-    const { cell: { paddingLeft, paddingRight, gap } } = this.option
+    const { paddingLeft, paddingRight, gap } = this.option
     const { borderBottom } = this.themeChars
     this.result += borderBottom.left
     this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
@@ -159,7 +155,7 @@ export class Tablegger {
   }
 
   private get themeChars() {
-    return characterArrayToObject(this.option.table.theme)
+    return characterArrayToObject(this.option.theme)
   }
 
   private fillEmptyChar() {
@@ -260,7 +256,7 @@ export class Tablegger {
    * Override config
    * @param option
    */
-  public setConfig(option?: Partial<UserOptionType>) {
+  public setConfig(option?: Partial<OptionType>) {
     this.option = defu(option, this.option)
     return this
   }
@@ -283,7 +279,7 @@ export class Tablegger {
    * Generate result
    */
   public toString() {
-    const { cell: { paddingY, gap } } = this.option
+    const { paddingY, gap } = this.option
     // Reset result
     this.result = ''
     // Get columnsWidth
@@ -297,16 +293,16 @@ export class Tablegger {
 
       for (let j = 0; j < this.data[i].length; j++) {
         // insert paddingX gap before each word
-        this.result += ' '.repeat(this.option.cell.paddingLeft)
+        this.result += ' '.repeat(this.option.paddingLeft)
 
         const rawWord = this.data[i][j]
         const pureWordLen = stringWidth(rawWord)
         const gapLen = this.columnsWidth[j] - pureWordLen
 
-        if (this.option.cell.align === 'right') {
+        if (this.option.align === 'right') {
           this.result = this.result + ' '.repeat(gapLen) + rawWord
         }
-        else if (this.option.cell.align === 'left') {
+        else if (this.option.align === 'left') {
           this.result = this.result + rawWord + ' '.repeat(gapLen)
         }
         else {
@@ -315,7 +311,7 @@ export class Tablegger {
           this.result = this.result + ' '.repeat(startLen) + rawWord + ' '.repeat(endLen)
         }
         // insert paddingX gap after each word
-        this.result += ' '.repeat(this.option.cell.paddingRight)
+        this.result += ' '.repeat(this.option.paddingRight)
 
         if (j < this.data[i].length - 1) {
           this.result += ' '.repeat(gap)

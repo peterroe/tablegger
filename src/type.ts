@@ -1,21 +1,13 @@
 import type { ThemeType, defaultThemes } from './const'
 
-export interface UserOptionType {
-  table?: TableType
-  cell?: CellType
-}
-
 export type themeType = keyof typeof defaultThemes | ThemeType
 
-export interface TableType {
+export interface OptionType {
   /**
    * Is need a border
    * @default noBorder
    */
   theme?: themeType
-}
-
-export interface CellType {
   /**
    * @default center
    */
@@ -37,11 +29,6 @@ export interface CellType {
    * @default 0
    */
   gap?: number
-}
-
-export interface OptionType extends UserOptionType {
-  table: Required<TableType>
-  cell: Required<CellType>
 }
 
 export type PrimaryType = string
