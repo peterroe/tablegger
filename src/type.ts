@@ -13,22 +13,34 @@ export interface OptionType {
    */
   align?: 'left' | 'right' | 'center'
   /**
-   * The left and right margins of the cell
+   * The left margins of the cell
    * @default 0 (character)
    */
-  paddingX?: number
   paddingLeft?: number
+  /**
+   * The right margins of the cell
+   * @default 0 (character)
+   */
   paddingRight?: number
   /**
-   * The top and bome margins of the cell
+   * The top and bottom margins of the cell
    * @default 0 (line)
    */
   paddingY?: number
   /**
-   * Valid when table.border is `false`!
+   * Left and right spacing of vertical borders
    * @default 0
    */
   gap?: number
+  /**
+   * Table title
+   */
+  title?: {
+    name: string
+    position?: 'top' | 'inline' | 'bottom'
+    // If the value is not specified, it is the center
+    indent?: number
+  }
 }
 
 export type PrimaryType = string

@@ -37,6 +37,31 @@ logger.setConfig({
 })
 console.log(logger.toString())
 
+logger.setConfig({
+  title: {
+    name: 'Hello World',
+  },
+})
+console.log(logger.toString())
+
+logger.setConfig({
+  title: {
+    name: 'Hello World',
+    position: 'bottom',
+  },
+})
+console.log(logger.toString())
+
+logger.setConfig({
+  theme: 'table',
+  title: {
+    name: p.blue('Hello World'),
+    position: 'inline',
+    indent: 1,
+  },
+})
+console.log(logger.toString())
+
 /**
 ┌───────┬┬┐
 │Variety│││

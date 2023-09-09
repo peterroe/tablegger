@@ -21,7 +21,7 @@ const borderStyleMatrix: TableStylyMatrix = [
 const noBorderStyleMatrix: TableStylyMatrix = [
   [' ', ' ', ' ', ' ', ' '],
   [' ', ' ', ' ', ' ', ' '],
-  [' ', ' ', ' ', ' ', ' '],
+  ['', '', '', '', ''],
   [' ', ' ', ' ', ' ', ' '],
   [' ', ' ', ' ', ' ', ' '],
 ]
@@ -70,20 +70,28 @@ export interface DefaultThemeType {
 export const defaultThemes = {
   table: {
     matrix: borderStyleMatrix,
+    option: {},
   },
   noBorder: {
     matrix: noBorderStyleMatrix,
+    option: {},
   },
   singleLine: {
     matrix: singleLineBorderStyleMatrix,
+    option: {
+      gap: 1,
+    },
   },
   doubleLine: {
     matrix: doubleLineBorderStyleMatrix,
+    option: {},
   },
   horizontalLine: {
     matrix: horizontalLineBorderStyleMatrix,
+    option: {},
   },
   intersect: {
     matrix: intersectBorderStyleMatrix,
+    option: {},
   },
 }

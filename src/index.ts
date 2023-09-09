@@ -3,14 +3,18 @@ import { consola } from 'consola'
 import stringWidth from 'string-width'
 import type { OptionType, PrimaryType } from './type'
 import { characterArrayToObject } from './utils'
+import { defaultThemes } from './const'
 const defaultOption: Required<OptionType> = {
-  theme: 'noBorder',
-  paddingX: 0,
+  theme: 'singleLine',
   paddingLeft: 0,
   paddingRight: 0,
   paddingY: 0,
   align: 'left',
   gap: 0,
+  title: {
+    name: '',
+    position: 'top',
+  },
 }
 
 export class Tablegger {
@@ -43,6 +47,9 @@ export class Tablegger {
 
   constructor(option?: OptionType) {
     this.option = defu(option, defaultOption)
+    // built-in option in theme
+    if (option && typeof option.theme === 'string')
+      this.option = defu(defaultThemes[option.theme].option, this.option)
   }
 
   private push(word: string) {
@@ -167,6 +174,35 @@ export class Tablegger {
     }
   }
 
+  private setTitle(result: string) {
+    const { name, position, indent } = this.option.title
+    if (!name)
+      return result
+
+    const len = (() => {
+      const allColumnsLen = this.columnsWidth.reduce((pre, cur) => pre + cur, 0)
+      const paddingsLen = this.columnsWidth.length * (this.option.paddingLeft + this.option.paddingRight)
+      const gapsLen = this.columnsWidth.length * 2 - 2
+      return allColumnsLen + paddingsLen + gapsLen
+    })()
+    const pureLen = stringWidth(name)
+    const restLen = len - pureLen
+    if (position === 'top') {
+      const leftLen = indent || Math.floor(restLen / 2)
+      const rightLen = len - leftLen
+      return `${' '.repeat(leftLen) + name + ' '.repeat(rightLen)}\n${result}`
+    }
+    else if (position === 'bottom') {
+      const leftLen = indent || Math.floor(restLen / 2)
+      const rightLen = len - leftLen
+      return `${result}${' '.repeat(leftLen) + name + ' '.repeat(rightLen)}`
+    }
+    else if (position === 'inline') {
+      const leftLen = indent || Math.floor(restLen / 2)
+      return `${result.slice(0, leftLen) + name + result.slice(leftLen + pureLen)}`
+    }
+  }
+
   /**
    * Add table elements
    * @param words
@@ -224,6 +260,7 @@ export class Tablegger {
     this.data.push(newRow)
     this.i = this.data.length - 1
     this.j = newRow.length - 1
+    return this
   }
 
   /**
@@ -261,11 +298,15 @@ export class Tablegger {
     return this
   }
 
+  /**
+   * Keep table cells, But clear content
+   */
   public clearTable() {
     for (let i = 0; i < this.data.length; i++) {
       for (let j = 0; j < this.column; j++)
         this.data[i][j] = ''
     }
+    return this
   }
 
   /**
@@ -319,11 +360,8 @@ export class Tablegger {
           this.result += ' '.repeat(gap)
         }
       }
-      if (i === 1)
-        this.result += this.themeChars.borderGap.right
 
-      else
-        this.result += this.themeChars.borderGap.right
+      this.result += this.themeChars.borderGap.right
       this.result += '\n'
 
       t = 0
@@ -337,10 +375,9 @@ export class Tablegger {
           this.addBorderRow()
       }
     }
-    // if (border)
     this.addBorderFooterRow()
-
-    return this.result
+    // set title for table
+    return this.setTitle(this.result)
   }
 }
 
