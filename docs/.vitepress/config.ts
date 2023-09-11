@@ -71,11 +71,11 @@ export default defineConfig({
       '/guide/': SidebarGuide,
     },
     editLink: {
-      pattern: 'https://github.com/peterroe/un/edit/main/templates/docs-starter/:paht',
+      pattern: 'https://github.com/peterroe/tablegger/edit/main/docs/:paht',
       text: 'Suggest changes to this page',
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/peterroe/un' },
+      { icon: 'github', link: 'https://github.com/peterroe/tablegger' },
     ],
     footer: {
       message: 'Released under the MIT License.',
