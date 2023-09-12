@@ -2,19 +2,35 @@ import { defu } from 'defu'
 import { consola } from 'consola'
 import stringWidth from 'string-width'
 import type { OptionType, PrimaryType } from './type'
-import { characterArrayToObject } from './utils'
+import { characterArrayToObject, stringify } from './utils'
 import { defaultThemes } from './const'
 const defaultOption: Required<OptionType> = {
   theme: 'singleLine',
-  paddingLeft: 0,
-  paddingRight: 0,
-  paddingY: 0,
+  cellPaddingLeft: 0,
+  cellPaddingRight: 0,
+  cellPaddingTop: 0,
+  cellPaddingBottom: 0,
   align: 'left',
   gap: 0,
-  title: {
+  caption: {
     name: '',
     position: 'top',
   },
+}
+
+interface userOptionType extends OptionType {
+  cellPaddingY?: number
+  cellPaddingX?: number
+  cell?: {
+    padding?: {
+      x: number
+      y: number
+      left: number
+      top: number
+      right: number
+      bottom: number
+    }
+  }
 }
 
 export class Tablegger {
@@ -45,11 +61,11 @@ export class Tablegger {
    * @default 3
    */
 
-  constructor(option?: OptionType) {
-    this.option = defu(option, defaultOption)
+  constructor(userOption?: userOptionType) {
+    this.option = defu(deconstruct(userOption), defaultOption)
     // built-in option in theme
-    if (option && typeof option.theme === 'string')
-      this.option = defu(defaultThemes[option.theme].option, this.option)
+    if (userOption && typeof userOption.theme === 'string')
+      this.option = defu(defaultThemes[userOption.theme].option, this.option)
   }
 
   private push(word: string) {
@@ -77,10 +93,10 @@ export class Tablegger {
   }
 
   private addHeaderTopBorderRow() {
-    const { paddingLeft, paddingRight, gap } = this.option
+    const { cellPaddingLeft, cellPaddingRight, gap } = this.option
     const { borderTop } = this.themeChars
     this.result += borderTop.left
-    this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
+    this.columnsWidth.map(column => column + (cellPaddingLeft + cellPaddingRight)).forEach((column, index) => {
       this.result += borderTop.horizontal.repeat(column)
       if (index < this.columnsWidth.length - 1) {
         this.result += ' '.repeat(gap)
@@ -92,7 +108,7 @@ export class Tablegger {
   }
 
   private addBorderRow() {
-    const { paddingLeft, paddingRight, gap } = this.option
+    const { cellPaddingLeft, cellPaddingRight, gap } = this.option
     const { borderMiddle } = this.themeChars
     // no border if borderMiddle value is empty
     if (!Object.values(borderMiddle).filter(Boolean).length)
@@ -100,7 +116,7 @@ export class Tablegger {
 
     this.result += borderMiddle.left
     // this.result += ' '.repeat(gapX)
-    this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
+    this.columnsWidth.map(column => column + (cellPaddingLeft + cellPaddingRight)).forEach((column, index) => {
       this.result += borderMiddle.horizontal.repeat(column)
       if (index < this.columnsWidth.length - 1) {
         this.result += ' '.repeat(gap)
@@ -112,11 +128,11 @@ export class Tablegger {
   }
 
   private addHeaderBottomBorderRow() {
-    const { paddingLeft, paddingRight, gap } = this.option
+    const { cellPaddingLeft, cellPaddingRight, gap } = this.option
     const { borderSep } = this.themeChars
     this.result += borderSep.left
     // this.result += ' '.repeat(gapX)
-    this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
+    this.columnsWidth.map(column => column + (cellPaddingLeft + cellPaddingRight)).forEach((column, index) => {
       this.result += borderSep.horizontal.repeat(column)
       if (index < this.columnsWidth.length - 1) {
         this.result += ' '.repeat(gap)
@@ -128,10 +144,10 @@ export class Tablegger {
   }
 
   private addPaddingYRow() {
-    const { paddingLeft, paddingRight, gap } = this.option
+    const { cellPaddingLeft, cellPaddingRight, gap } = this.option
     const { borderGap } = this.themeChars
     this.result += borderGap.left
-    this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
+    this.columnsWidth.map(column => column + (cellPaddingLeft + cellPaddingRight)).forEach((column, index) => {
       this.result += borderGap.horizontal.repeat(column)
       if (index < this.columnsWidth.length - 1) {
         this.result += ' '.repeat(gap)
@@ -143,10 +159,10 @@ export class Tablegger {
   }
 
   private addBorderFooterRow() {
-    const { paddingLeft, paddingRight, gap } = this.option
+    const { cellPaddingLeft, cellPaddingRight, gap } = this.option
     const { borderBottom } = this.themeChars
     this.result += borderBottom.left
-    this.columnsWidth.map(column => column + (paddingLeft + paddingRight)).forEach((column, index) => {
+    this.columnsWidth.map(column => column + (cellPaddingLeft + cellPaddingRight)).forEach((column, index) => {
       this.result += borderBottom.horizontal.repeat(column)
       if (index < this.columnsWidth.length - 1) {
         this.result += ' '.repeat(gap)
@@ -174,31 +190,30 @@ export class Tablegger {
     }
   }
 
-  private setTitle(result: string) {
-    const { name, position, indent } = this.option.title
+  private setCaption(result: string) {
+    const { name, position, indent } = this.option.caption
     if (!name)
       return result
 
     const len = (() => {
       const allColumnsLen = this.columnsWidth.reduce((pre, cur) => pre + cur, 0)
-      const paddingsLen = this.columnsWidth.length * (this.option.paddingLeft + this.option.paddingRight)
+      const paddingsLen = this.columnsWidth.length * (this.option.cellPaddingLeft + this.option.cellPaddingRight)
       const gapsLen = this.columnsWidth.length * 2 - 2
       return allColumnsLen + paddingsLen + gapsLen
     })()
     const pureLen = stringWidth(name)
     const restLen = len - pureLen
+
+    const leftLen = typeof indent === 'number' ? indent : Math.floor(restLen / 2)
     if (position === 'top') {
-      const leftLen = indent || Math.floor(restLen / 2)
       const rightLen = len - leftLen
       return `${' '.repeat(leftLen) + name + ' '.repeat(rightLen)}\n${result}`
     }
     else if (position === 'bottom') {
-      const leftLen = indent || Math.floor(restLen / 2)
       const rightLen = len - leftLen
       return `${result}${' '.repeat(leftLen) + name + ' '.repeat(rightLen)}`
     }
     else if (position === 'inline') {
-      const leftLen = indent || Math.floor(restLen / 2)
       return `${result.slice(0, leftLen) + name + result.slice(leftLen + pureLen)}`
     }
   }
@@ -209,10 +224,10 @@ export class Tablegger {
    */
   public add(words: string | string[] = '') {
     if (!Array.isArray(words))
-      this.push(words.toString())
+      this.push(stringify(words))
 
     else
-      words.forEach(word => this.push(word.toString()))
+      words.map(stringify).forEach(word => this.push(word))
 
     return this
   }
@@ -223,8 +238,8 @@ export class Tablegger {
    * @param colWords
    */
   public setHeaders(rowWords: PrimaryType[], colWords: PrimaryType[]) {
-    this.setRowHeaders(rowWords)
-      .setColHeaders(colWords)
+    this.setRowHeaders(rowWords.map(stringify))
+      .setColHeaders(colWords.map(stringify))
     return this
   }
 
@@ -233,7 +248,7 @@ export class Tablegger {
    * @param rowWords
    */
   public setRowHeaders(rowWords: PrimaryType[]) {
-    this.data[0] = rowWords.map(it => it.toString())
+    this.data[0] = rowWords.map(stringify)
     this.fillEmptyChar()
     return this
   }
@@ -242,12 +257,12 @@ export class Tablegger {
    * Set table column header
    * @param colWords
    */
-  public setColHeaders(colWords: string[]) {
+  public setColHeaders(colWords: PrimaryType[]) {
     colWords.forEach((word, i) => {
       if (!this.data[i + 1])
         this.data[i + 1] = new Array(this.column).fill('')
 
-      this.data[i + 1][0] = word
+      this.data[i + 1][0] = stringify(word)
     })
     return this
   }
@@ -256,8 +271,8 @@ export class Tablegger {
    * Add table row (Allow reset column)
    * @param colWords
    */
-  public addRow(newRow: Array<string>) {
-    this.data.push(newRow)
+  public addRow(newRow: Array<PrimaryType>) {
+    this.data.push(newRow.map(stringify))
     this.i = this.data.length - 1
     this.j = newRow.length - 1
     return this
@@ -281,11 +296,11 @@ export class Tablegger {
    * @param j Ordinate
    * @param word your data
    */
-  public set(i: number, j: number, word: string) {
+  public set(i: number, j: number, word: PrimaryType) {
     if (i > this.i || j > this.j)
       consola.error(`Invalid parameters, i must be less than or equal to ${this.i}, and j must be greater than or equal to ${this.j}`)
 
-    this.data[i][j] = word
+    this.data[i][j] = stringify(word)
     return this
   }
 
@@ -293,8 +308,8 @@ export class Tablegger {
    * Override config
    * @param option
    */
-  public setConfig(option?: Partial<OptionType>) {
-    this.option = defu(option, this.option)
+  public setConfig(userOption?: userOptionType) {
+    this.option = defu(deconstruct(userOption), this.option)
     return this
   }
 
@@ -320,7 +335,7 @@ export class Tablegger {
    * Generate result
    */
   public toString() {
-    const { paddingY, gap } = this.option
+    const { cellPaddingTop, cellPaddingBottom, gap } = this.option
     // Reset result
     this.result = ''
     // Get columnsWidth
@@ -329,12 +344,12 @@ export class Tablegger {
 
     for (let i = 0; i < this.data.length; i++) {
       let t = 0
-      while (t++ < paddingY) this.addPaddingYRow()
+      while (t++ < cellPaddingTop) this.addPaddingYRow()
       this.result += this.themeChars.borderGap.left
 
       for (let j = 0; j < this.data[i].length; j++) {
-        // insert paddingX gap before each word
-        this.result += ' '.repeat(this.option.paddingLeft)
+        // insert cellPaddingX gap before each word
+        this.result += ' '.repeat(this.option.cellPaddingLeft)
 
         const rawWord = this.data[i][j]
         const pureWordLen = stringWidth(rawWord)
@@ -351,8 +366,8 @@ export class Tablegger {
           const endLen = gapLen - startLen
           this.result = this.result + ' '.repeat(startLen) + rawWord + ' '.repeat(endLen)
         }
-        // insert paddingX gap after each word
-        this.result += ' '.repeat(this.option.paddingRight)
+        // insert cellPaddingX gap after each word
+        this.result += ' '.repeat(this.option.cellPaddingRight)
 
         if (j < this.data[i].length - 1) {
           this.result += ' '.repeat(gap)
@@ -365,7 +380,7 @@ export class Tablegger {
       this.result += '\n'
 
       t = 0
-      while (t++ < paddingY) this.addPaddingYRow()
+      while (t++ < cellPaddingBottom) this.addPaddingYRow()
 
       if (i < this.data.length - 1) {
         if (i === 0)
@@ -376,8 +391,8 @@ export class Tablegger {
       }
     }
     this.addBorderFooterRow()
-    // set title for table
-    return this.setTitle(this.result)
+    // set caption for table
+    return this.setCaption(this.result)
   }
 }
 
@@ -393,3 +408,18 @@ function calcMaxEffectWordLength(rawWords: string[]) {
   }
   return len
 }
+
+function deconstruct(userOption?: userOptionType) {
+  const { cellPaddingX, cellPaddingY, cell, ...rest } = userOption || {}
+  rest.cellPaddingLeft = cellPaddingX
+  rest.cellPaddingRight = cellPaddingX
+  rest.cellPaddingTop = cellPaddingY
+  rest.cellPaddingBottom = cellPaddingY
+  return rest
+}
+
+// type tableDataType = Array<PrimaryType>
+// | Array<Array<PrimaryType>>
+// | Array<{ [i: string]: PrimaryType }>
+
+// export function table(data: tableDataType, column: Array<PrimaryType>)

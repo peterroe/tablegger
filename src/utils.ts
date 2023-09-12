@@ -53,3 +53,7 @@ export function characterArrayToObject(borderStyleTheme: themeType): TableStyleT
     },
   }
 }
+
+export function stringify(value: any): string {
+  return JSON.stringify(value)
+}

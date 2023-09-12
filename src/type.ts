@@ -13,34 +13,39 @@ export interface OptionType {
    */
   align?: 'left' | 'right' | 'center'
   /**
-   * The left margins of the cell
+   * The left padding of the cell
    * @default 0 (character)
    */
-  paddingLeft?: number
+  cellPaddingLeft?: number
   /**
-   * The right margins of the cell
+   * The right padding of the cell
    * @default 0 (character)
    */
-  paddingRight?: number
+  cellPaddingRight?: number
   /**
-   * The top and bottom margins of the cell
-   * @default 0 (line)
+   * The top padding of the cell
+   * @default 0 (character)
    */
-  paddingY?: number
+  cellPaddingTop?: number
+  /**
+   * The bottom padding of the cell
+   * @default 0 (character)
+   */
+  cellPaddingBottom?: number
   /**
    * Left and right spacing of vertical borders
    * @default 0
    */
   gap?: number
   /**
-   * Table title
+   * Table caption
    */
-  title?: {
+  caption?: {
     name: string
     position?: 'top' | 'inline' | 'bottom'
     // If the value is not specified, it is the center
-    indent?: number
+    indent?: number | string
   }
 }
 
-export type PrimaryType = string
+export type PrimaryType = any
