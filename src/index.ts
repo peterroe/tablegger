@@ -413,10 +413,10 @@ function calcMaxEffectWordLength(rawWords: string[]) {
 
 function deconstruct(userOption?: userOptionType) {
   const { cellPaddingX, cellPaddingY, cell, ...rest } = userOption || {}
-  rest.cellPaddingLeft = cellPaddingX
-  rest.cellPaddingRight = cellPaddingX
-  rest.cellPaddingTop = cellPaddingY
-  rest.cellPaddingBottom = cellPaddingY
+  rest.cellPaddingLeft = cellPaddingX || cell?.padding?.left
+  rest.cellPaddingRight = cellPaddingX || cell?.padding?.right
+  rest.cellPaddingTop = cellPaddingY || cell?.padding?.top
+  rest.cellPaddingBottom = cellPaddingY || cell?.padding?.bottom
   return rest
 }
 
