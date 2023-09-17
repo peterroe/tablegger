@@ -1,5 +1,6 @@
 import { defaultThemes } from './const'
 import type { themeType } from './type'
+import type { ArrayType, ObjectArrayType, ObjectType, TwoArrayType } from '.'
 
 interface RowType {
   left: string
@@ -54,6 +55,26 @@ export function characterArrayToObject(borderStyleTheme: themeType): TableStyleT
   }
 }
 
-export function stringify(value: any): string {
-  return JSON.stringify(value)
+export function stringify(value: any) {
+  return typeof value === 'string' ? value : JSON.stringify(value)
+}
+
+export function isArray(value: any): value is ArrayType {
+  return Array.isArray(value)
+}
+
+export function is2DArray(value: any): value is TwoArrayType {
+  return isArray(value) && value.every(isArray)
+}
+
+export function isObject(value: any): value is ObjectType {
+  return value instanceof Object
+}
+
+export function isObjectArray(value: any): value is ObjectArrayType {
+  return isArray(value) && value.every(isObject)
+}
+
+export function notUndefined(value: any) {
+  return value !== undefined
 }

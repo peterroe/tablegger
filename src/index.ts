@@ -1,8 +1,9 @@
 import { defu } from 'defu'
 import { consola } from 'consola'
 import stringWidth from 'string-width'
+import p from 'picocolors'
 import type { OptionType, PrimaryType } from './type'
-import { characterArrayToObject, stringify } from './utils'
+import { characterArrayToObject, is2DArray, isArray, isObject, isObjectArray, stringify } from './utils'
 import { defaultThemes } from './const'
 const defaultOption: Required<OptionType> = {
   theme: 'singleLine',
@@ -273,6 +274,7 @@ export class Tablegger {
    */
   public addRow(newRow: Array<PrimaryType>) {
     this.data.push(newRow.map(stringify))
+    this.fillEmptyChar()
     this.i = this.data.length - 1
     this.j = newRow.length - 1
     return this
@@ -418,8 +420,77 @@ function deconstruct(userOption?: userOptionType) {
   return rest
 }
 
-// type tableDataType = Array<PrimaryType>
-// | Array<Array<PrimaryType>>
-// | Array<{ [i: string]: PrimaryType }>
+export type ArrayType = Array<PrimaryType>
+export type TwoArrayType = Array<ArrayType>
+export interface ObjectType { [i: string]: PrimaryType }
+export type ObjectArrayType = Array<ObjectType>
 
-// export function table(data: tableDataType, column: Array<PrimaryType>)
+export type tableDataType = ArrayType
+| TwoArrayType
+| ObjectType
+| ObjectArrayType
+
+export function table(data: tableDataType, column?: ArrayType) {
+  if (is2DArray(data)) {
+    const maxLen = Math.max(...data.map(it => it.length))
+    const logger = new Tablegger({
+      theme: 'intersect',
+      cellPaddingX: 2,
+    }).setRowHeaders([
+      '(index)',
+      ...new Array(maxLen).fill('').map((_, i) => i),
+    ].map(p.bold))
+
+    data.forEach((it, i) => {
+      logger.addRow([p.bold(i), ...it])
+    })
+
+    // eslint-disable-next-line no-console
+    console.log(logger.toString())
+  }
+  else if (isObjectArray(data)) {
+    const keyList = new Set()
+    data.map(Object.keys).forEach(it => it.forEach(t => keyList.add(t)))
+    const keys = [...keyList].filter(key => column ? column.includes(key) : true) as any[]
+    const logger = new Tablegger({
+      theme: 'intersect',
+      cellPaddingX: 2,
+    }).setRowHeaders([
+      '(index)',
+      ...keys,
+    ])
+
+    data.forEach((it, i) => {
+      logger.addRow([p.bold(i), ...keys.map(key => it[key])])
+    })
+
+    // eslint-disable-next-line no-console
+    console.log(logger.toString())
+  }
+  else if (isArray(data)) {
+    const logger = new Tablegger({
+      theme: 'intersect',
+      cellPaddingX: 2,
+    }).setRowHeaders(['(index)', 'Value'].map(p.bold))
+    data.forEach((it, i) => {
+      logger.addRow([p.bold(i), it])
+    })
+    // eslint-disable-next-line no-console
+    console.log(logger.toString())
+  }
+  else if (isObject(data)) {
+    const logger = new Tablegger({
+      theme: 'intersect',
+      cellPaddingX: 2,
+    }).setRowHeaders(['(index)', 'Value'].map(p.bold))
+    Object.entries(data).forEach(([key, value]) => {
+      logger.addRow([p.bold(key), value])
+    })
+    // eslint-disable-next-line no-console
+    console.log(logger.toString())
+  }
+  else {
+    // eslint-disable-next-line no-console
+    console.log(data)
+  }
+}
