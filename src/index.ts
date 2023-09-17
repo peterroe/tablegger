@@ -430,13 +430,15 @@ export type tableDataType = ArrayType
 | ObjectType
 | ObjectArrayType
 
-export function table(data: tableDataType, column?: ArrayType) {
+export function table(data: tableDataType, column?: ArrayType, userOption?: userOptionType) {
+  const logger = new Tablegger(defu(userOption, {
+    theme: 'intersect',
+    cellPaddingX: 2,
+  } as OptionType))
+
   if (is2DArray(data)) {
     const maxLen = Math.max(...data.map(it => it.length))
-    const logger = new Tablegger({
-      theme: 'intersect',
-      cellPaddingX: 2,
-    }).setRowHeaders([
+    logger.setRowHeaders([
       '(index)',
       ...new Array(maxLen).fill('').map((_, i) => i),
     ].map(p.bold))
@@ -452,10 +454,8 @@ export function table(data: tableDataType, column?: ArrayType) {
     const keyList = new Set()
     data.map(Object.keys).forEach(it => it.forEach(t => keyList.add(t)))
     const keys = [...keyList].filter(key => column ? column.includes(key) : true) as any[]
-    const logger = new Tablegger({
-      theme: 'intersect',
-      cellPaddingX: 2,
-    }).setRowHeaders([
+
+    logger.setRowHeaders([
       '(index)',
       ...keys,
     ])
@@ -468,10 +468,8 @@ export function table(data: tableDataType, column?: ArrayType) {
     console.log(logger.toString())
   }
   else if (isArray(data)) {
-    const logger = new Tablegger({
-      theme: 'intersect',
-      cellPaddingX: 2,
-    }).setRowHeaders(['(index)', 'Value'].map(p.bold))
+    logger.setRowHeaders(['(index)', 'Value'].map(p.bold))
+
     data.forEach((it, i) => {
       logger.addRow([p.bold(i), it])
     })
@@ -479,10 +477,8 @@ export function table(data: tableDataType, column?: ArrayType) {
     console.log(logger.toString())
   }
   else if (isObject(data)) {
-    const logger = new Tablegger({
-      theme: 'intersect',
-      cellPaddingX: 2,
-    }).setRowHeaders(['(index)', 'Value'].map(p.bold))
+    logger.setRowHeaders(['(index)', 'Value'].map(p.bold))
+
     Object.entries(data).forEach(([key, value]) => {
       logger.addRow([p.bold(key), value])
     })
