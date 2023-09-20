@@ -5,6 +5,7 @@ import p from 'picocolors'
 import type { OptionType, PrimaryType } from './type'
 import { characterArrayToObject, is2DArray, isArray, isObject, isObjectArray, stringify } from './utils'
 import { defaultThemes } from './const'
+
 const defaultOption: Required<OptionType> = {
   theme: 'singleLine',
   cellPaddingLeft: 0,
@@ -17,6 +18,7 @@ const defaultOption: Required<OptionType> = {
     name: '',
     position: 'top',
   },
+  borderColorFn: p.gray,
 }
 
 interface userOptionType extends OptionType {
@@ -179,7 +181,7 @@ export class Tablegger {
   }
 
   private get themeChars() {
-    return characterArrayToObject(this.option.theme)
+    return characterArrayToObject(this.option.theme, this.option.borderColorFn)
   }
 
   private fillEmptyChar() {
@@ -193,6 +195,7 @@ export class Tablegger {
 
   private setCaption(result: string) {
     const { name, position, indent } = this.option.caption
+    const { borderColorFn } = this.option
     if (!name)
       return result
 
@@ -215,7 +218,9 @@ export class Tablegger {
       return `${result}${' '.repeat(leftLen) + name + ' '.repeat(rightLen)}`
     }
     else if (position === 'inline') {
-      return `${result.slice(0, leftLen) + name + result.slice(leftLen + pureLen)}`
+      // consider color
+      const singleColorCharLen = borderColorFn(' ').length
+      return `${result.slice(0, leftLen * singleColorCharLen) + name + result.slice((leftLen + pureLen) * singleColorCharLen)}`
     }
   }
 
@@ -441,10 +446,10 @@ export function table(data: tableDataType, column?: ArrayType, userOption?: user
     logger.setRowHeaders([
       '(index)',
       ...new Array(maxLen).fill('').map((_, i) => i),
-    ].map(p.bold))
+    ].map(p.bold).map(p.cyan))
 
     data.forEach((it, i) => {
-      logger.addRow([p.bold(i), ...it])
+      logger.addRow([p.cyan(p.bold(i)), ...it])
     })
 
     // eslint-disable-next-line no-console
@@ -461,26 +466,26 @@ export function table(data: tableDataType, column?: ArrayType, userOption?: user
     ])
 
     data.forEach((it, i) => {
-      logger.addRow([p.bold(i), ...keys.map(key => it[key])])
+      logger.addRow([p.cyan(p.bold(i)), ...keys.map(key => it[key])])
     })
 
     // eslint-disable-next-line no-console
     console.log(logger.toString())
   }
   else if (isArray(data)) {
-    logger.setRowHeaders(['(index)', 'Value'].map(p.bold))
+    logger.setRowHeaders(['(index)', 'Value'].map(p.bold).map(p.cyan))
 
     data.forEach((it, i) => {
-      logger.addRow([p.bold(i), it])
+      logger.addRow([p.cyan(p.bold(i)), it])
     })
     // eslint-disable-next-line no-console
     console.log(logger.toString())
   }
   else if (isObject(data)) {
-    logger.setRowHeaders(['(index)', 'Value'].map(p.bold))
+    logger.setRowHeaders(['(index)', 'Value'].map(p.bold).map(p.cyan))
 
     Object.entries(data).forEach(([key, value]) => {
-      logger.addRow([p.bold(key), value])
+      logger.addRow([p.cyan(p.bold(key)), value])
     })
     // eslint-disable-next-line no-console
     console.log(logger.toString())

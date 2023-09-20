@@ -1,7 +1,7 @@
+import type { Formatter } from 'picocolors/types'
 import type { ThemeType, defaultThemes } from './const'
 
 export type themeType = keyof typeof defaultThemes | ThemeType
-
 export interface OptionType {
   /**
    * Is need a border
@@ -46,6 +46,7 @@ export interface OptionType {
     // If the value is not specified, it is the center
     indent?: number | string
   }
+  borderColorFn?: Formatter
 }
 
 export type PrimaryType = any

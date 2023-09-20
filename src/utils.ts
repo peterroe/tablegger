@@ -1,3 +1,4 @@
+import type { Formatter } from 'picocolors/types'
 import { defaultThemes } from './const'
 import type { themeType } from './type'
 import type { ArrayType, ObjectArrayType, ObjectType, TwoArrayType } from '.'
@@ -17,10 +18,11 @@ interface TableStyleType {
   borderBottom: RowType
 }
 
-export function characterArrayToObject(borderStyleTheme: themeType): TableStyleType {
-  const matrix
+export function characterArrayToObject(borderStyleTheme: themeType, borderColorFn: Formatter): TableStyleType {
+  const rawMatrix
     = typeof borderStyleTheme !== 'object' ? defaultThemes[borderStyleTheme].matrix : borderStyleTheme.matrix
 
+  const matrix = rawMatrix.map(row => row.map(item => item ? borderColorFn(item) : item))
   return {
     borderTop: {
       left: matrix[0][0],

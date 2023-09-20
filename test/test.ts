@@ -4,7 +4,7 @@ import { Tablegger } from '../src/index'
 
 const logger = new Tablegger({
   theme: 'singleLine',
-  paddingRight: 4,
+  cellPaddingRight: 4,
   gap: 1,
 }).setColumn(3)
 
@@ -38,14 +38,14 @@ logger.setConfig({
 console.log(logger.toString())
 
 logger.setConfig({
-  title: {
+  caption: {
     name: 'Hello World',
   },
 })
 console.log(logger.toString())
 
 logger.setConfig({
-  title: {
+  caption: {
     name: 'Hello World',
     position: 'bottom',
   },
@@ -54,7 +54,7 @@ console.log(logger.toString())
 
 logger.setConfig({
   theme: 'table',
-  title: {
+  caption: {
     name: p.blue('Hello World'),
     position: 'inline',
     indent: 1,

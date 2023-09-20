@@ -6,7 +6,7 @@ describe('test', () => {
     const tablegger = new Tablegger({
       gap: 2,
       align: 'right',
-      paddingY: 1,
+      cellPaddingX: 1,
     }).setColumn(3)
     tablegger.add(p.bgYellow('nam2sdfsdfs34e'))
     tablegger.add('ag234e')
@@ -74,7 +74,7 @@ describe('test', () => {
     const tablegger = new Tablegger({
       theme: 'table',
       gap: 0,
-      paddingY: 2,
+      cellPaddingY: 2,
       align: 'center',
     })
     tablegger.add('name')
