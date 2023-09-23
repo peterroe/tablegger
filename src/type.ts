@@ -50,3 +50,31 @@ export interface OptionType {
 }
 
 export type PrimaryType = any
+
+export interface userOptionType extends OptionType {
+  cellPaddingY?: number
+  cellPaddingX?: number
+  cell?: {
+    padding?: {
+      x: number
+      y: number
+      left: number
+      top: number
+      right: number
+      bottom: number
+    }
+  }
+}
+
+// Type
+
+export type ArrayType = Array<PrimaryType>
+export type TwoArrayType = Array<ArrayType>
+export interface ObjectType { [i: string]: PrimaryType }
+export interface TwoObjectType { [i: string]: ObjectType }
+export type ObjectArrayType = Array<ObjectType>
+
+export type tableDataType = ArrayType
+| TwoArrayType
+| ObjectType
+| ObjectArrayType

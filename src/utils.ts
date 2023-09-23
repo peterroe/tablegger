@@ -1,7 +1,6 @@
 import type { Formatter } from 'picocolors/types'
 import { defaultThemes } from './const'
-import type { themeType } from './type'
-import type { ArrayType, ObjectArrayType, ObjectType, TwoArrayType } from '.'
+import type { ArrayType, ObjectArrayType, ObjectType, TwoArrayType, TwoObjectType, themeType } from './type'
 
 interface RowType {
   left: string
@@ -71,6 +70,10 @@ export function is2DArray(value: any): value is TwoArrayType {
 
 export function isObject(value: any): value is ObjectType {
   return value instanceof Object
+}
+
+export function is2DObject(value: any): value is TwoObjectType {
+  return isObject(value) && Object.values(value).every(isObject)
 }
 
 export function isObjectArray(value: any): value is ObjectArrayType {
