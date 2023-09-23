@@ -34,3 +34,7 @@ family.father = new Person('Tyrone', 'Jones')
 family.daughter = new Person('Maria', 'Jones')
 
 table(family)
+
+// Five
+
+table([tyrone, janet, maria], ['firstName'])

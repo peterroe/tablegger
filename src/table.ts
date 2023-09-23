@@ -32,7 +32,7 @@ export function table(data: tableDataType, column?: ArrayType, userOption?: user
     logger.setRowHeaders([
       '(index)',
       ...keys,
-    ])
+    ].map(p.bold).map(p.cyan))
 
     data.forEach((it, i) => {
       logger.addRow([p.cyan(p.bold(i)), ...keys.map(key => it[key])])
@@ -51,7 +51,7 @@ export function table(data: tableDataType, column?: ArrayType, userOption?: user
     logger.setRowHeaders([
       '(index)',
       ...keys,
-    ])
+    ].map(p.bold).map(p.cyan))
 
     values.forEach((it, i) => {
       logger.addRow([p.cyan(p.bold(columns[i])), ...keys.map(key => it[key])])
