@@ -181,14 +181,15 @@ export class Tablegger {
   private setCaption(result: string) {
     const { name, position, indent } = this.option.caption
     const { borderColorFn } = this.option
-    if (!name)
+    if (!name.length)
       return result
 
     const len = (() => {
       const allColumnsLen = this.columnsWidth.reduce((pre, cur) => pre + cur, 0)
       const paddingsLen = this.columnsWidth.length * (this.option.cellPaddingLeft + this.option.cellPaddingRight)
-      const gapsLen = this.columnsWidth.length * 2 - 2
-      return allColumnsLen + paddingsLen + gapsLen
+      const gapsLen = this.option.gap * (this.columnsWidth.length * 2 - 2)
+      const columnBorderLen = this.columnsWidth.length + 1
+      return allColumnsLen + paddingsLen + gapsLen + columnBorderLen
     })()
     const pureLen = stringWidth(name)
     const restLen = len - pureLen

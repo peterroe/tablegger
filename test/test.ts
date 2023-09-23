@@ -6,6 +6,9 @@ const logger = new Tablegger({
   theme: 'singleLine',
   cellPaddingRight: 4,
   gap: 1,
+  caption: {
+    name: 'singleLine',
+  },
 }).setColumn(3)
 
 logger.add('Stage').add('Time').add('Rss')
