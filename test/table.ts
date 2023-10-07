@@ -33,7 +33,7 @@ family.mother = new Person('Janet', 'Jones')
 family.father = new Person('Tyrone', 'Jones')
 family.daughter = new Person('Maria', 'Jones')
 
-table(family)
+table(family, ['firstName'], { theme: 'noBorder' })
 
 // Five
 

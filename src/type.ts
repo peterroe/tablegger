@@ -77,4 +77,5 @@ export type ObjectArrayType = Array<ObjectType>
 export type tableDataType = ArrayType
 | TwoArrayType
 | ObjectType
+| TwoObjectType
 | ObjectArrayType

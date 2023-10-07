@@ -1,10 +1,20 @@
 import defu from 'defu'
 import p from 'picocolors'
 import { is2DArray, is2DObject, isArray, isObject, isObjectArray } from './utils'
-import type { ArrayType, OptionType, tableDataType, userOptionType } from './type'
+import type { ArrayType, ObjectArrayType, OptionType, TwoObjectType, tableDataType, userOptionType } from './type'
 import { Tablegger } from './Tablegger'
 
-export function table(data: tableDataType, column?: ArrayType, userOption?: userOptionType) {
+export function table(data: tableDataType): void
+export function table(data: tableDataType, mix: userOptionType): void
+export function table(data: ObjectArrayType | TwoObjectType, mix: ArrayType): void
+export function table(data: ObjectArrayType | TwoObjectType, mix: ArrayType, userOption: userOptionType): void
+export function table(data: tableDataType, mix?: ArrayType | userOptionType, userOption?: userOptionType) {
+  const column = (() => {
+    if (isArray(mix))
+      return mix
+    else
+      userOption = mix
+  })()
   const logger = new Tablegger(defu(userOption, {
     theme: 'intersect',
     cellPaddingX: 2,
@@ -27,7 +37,7 @@ export function table(data: tableDataType, column?: ArrayType, userOption?: user
   else if (isObjectArray(data)) {
     const keyList = new Set()
     data.map(Object.keys).forEach(it => it.forEach(t => keyList.add(t)))
-    const keys = [...keyList].filter(key => column ? column.includes(key) : true) as any[]
+    const keys = [...keyList].filter(key => isArray(column) ? column.includes(key) : true) as any[]
 
     logger.setRowHeaders([
       '(index)',
@@ -46,7 +56,7 @@ export function table(data: tableDataType, column?: ArrayType, userOption?: user
     const columns = Object.keys(data)
     const values = Object.values(data)
     values.map(Object.keys).forEach(it => it.forEach(t => itemkeyList.add(t)))
-    const keys = [...itemkeyList].filter(key => column ? column.includes(key) : true) as any[]
+    const keys = [...itemkeyList].filter(key => isArray(column) ? column.includes(key) : true) as any[]
 
     logger.setRowHeaders([
       '(index)',
