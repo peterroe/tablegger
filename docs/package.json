@@ -14,7 +14,7 @@
     "@iconify-json/ph": "^1.1.5",
     "@iconify-json/twemoji": "^1.1.11",
     "@iconify-json/vscode-icons": "^1.1.25",
-    "unocss": "^0.53.5",
+    "unocss": "^0.63.0",
     "vitepress": "1.0.0-beta.5",
     "vue": "^3.3.4"
   },
