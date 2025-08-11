@@ -49,7 +49,7 @@
     "tsup": "^7.2.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "0.35.3",
+    "@antfu/eslint-config": "0.43.1",
     "@types/node": "^18.15.11",
     "bumpp": "8.2.1",
     "eslint": "8.38.0",
