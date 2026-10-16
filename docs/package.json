@@ -19,7 +19,7 @@
     "vue": "^3.3.4"
   },
   "dependencies": {
-    "unplugin-vue-components": "^0.25.1",
+    "unplugin-vue-components": "^0.28.0",
     "v-viewer": "^3.0.11",
     "viewerjs": "^1.11.4",
     "vite": "^4.4.3"
